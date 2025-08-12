@@ -1,0 +1,109 @@
+/* Styles for JobDetails page - Full Width, Modern Design */
+.job-details-container {
+  width: 100vw;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 3rem 2.5rem;
+  margin: 0;
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.job-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.job-info {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(31,38,135,0.1);
+  padding: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #2a3b4d;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.job-info > div {
+  margin-bottom: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(42, 59, 77, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.job-info > div:last-child {
+  border-bottom: none;
+}
+
+.job-info strong {
+  color: #667eea;
+  font-weight: 600;
+  min-width: 120px;
+  font-size: 1.1rem;
+}
+
+.job-description {
+  line-height: 1.7;
+  color: #4a5568;
+}
+
+.job-salary {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.job-apply-btn {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  color: white;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 25px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 2rem;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  transition: all 0.3s ease;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.job-apply-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+@media (max-width: 768px) {
+  .job-details-container {
+    margin: 2rem 1rem;
+    padding: 2rem 1.5rem;
+  }
+  
+  .job-title {
+    font-size: 2.2rem;
+  }
+  
+  .job-info > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .job-info strong {
+    min-width: auto;
+  }
+}
