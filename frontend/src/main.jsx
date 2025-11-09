@@ -1,31 +1,24 @@
-import React, { createContext, useState } from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
+import "./main.css";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import { BrowserRouter } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { Provider } from "react-redux";
+import rootReducer from "./reducer";
+import { configureStore } from "@reduxjs/toolkit";
 
-export const Context = createContext({
-  isAuthorized: false,
+const store = configureStore({
+    reducer: rootReducer,
 });
 
-const AppWrapper = () => {
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [user, setUser] = useState({});
-
-  return (
-    <Context.Provider
-      value={{
-        isAuthorized,
-        setIsAuthorized,
-        user,
-        setUser,
-      }}
-    >
-      <App />
-    </Context.Provider>
-  );
-};
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <AppWrapper />
-  </React.StrictMode>
+createRoot(document.getElementById("root")).render(
+    <StrictMode>
+        <Provider store={store}>
+            <BrowserRouter>
+                <Toaster />
+                <App />
+            </BrowserRouter>
+        </Provider>
+    </StrictMode>
 );
