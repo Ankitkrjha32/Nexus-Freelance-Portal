@@ -49,12 +49,12 @@ const HowItWorks = () => {
                     {postJobSteps.map((step, index) => (
                         <div
                             key={index}
-                            className="h-80 w-60  transition-all duration-300 hover:scale-110 rounded-lg p-3 flex flex-col items-center justify-start text-black relative ring-2 ring-pure-greys-600"
+                            className="h-80 w-60  transition-all duration-300 hover:scale-110 rounded-lg p-3 flex flex-col items-center justify-start text-black relative ring-3 ring-gray-500"
                         >
                             <h3 className="font-inter font-bold text-2xl mt-4 text-center h-30 w-28">{step.title}</h3>
                             <p className="font-inter text-lg font-medium text-center">{step.description}</p>
                             <span className="absolute left-[20px] top-[10px] rounded-full px-2 font-extrabold ring-2 ">{index + 1}</span>
-                            <div className="w-full h-full absolute blur-md bg-blue-400 opacity-40 top-[-5px]"></div>
+                            <div className="w-full h-full absolute blur-md bg-blue-200 opacity-40 top-[-5px]"></div>
                         </div>
                     ))}
                 </div>

@@ -15,7 +15,7 @@ const Navbar = () => {
         return matchPath({ path: route }, location.pathname);
     };
     return (
-        <div className="flex items-center justify center bg-white h-14 w-full p-2">
+        <div className="flex items-center justify center bg-white h-14 w-full p-2 fixed z-50">
             <div className="flex flex-row justify-between w-full h-10 items-center">
                 {/* div 1 -> logo */}
                 <Link className="flex h-8  items-center" to="/">
@@ -38,7 +38,9 @@ const Navbar = () => {
                     {token === null && (
                         <Link to="/Login">
                             <button
-                                className={`bg-richblack-800 py-2 px-3 rounded-xl ${matchRoute("/login") ? "border-1 border-white" : ""}`}
+                                className={`py-2 px-3 rounded-xl text-black hover:bg-blue-5 ${
+                                    matchRoute("/login") ? "border-1 border-white" : ""
+                                }`}
                             >
                                 Login
                             </button>
@@ -46,9 +48,7 @@ const Navbar = () => {
                     )}
                     {token === null && (
                         <Link to="/Signup">
-                            <button
-                                className={`bg-richblack-800 py-2 px-3 rounded-xl ${matchRoute("/signup") ? "border-1 border-white" : ""}`}
-                            >
+                            <button className={`bg-cyan-600 py-2 px-3 rounded-xl ${matchRoute("/signup") ? "border-1 border-white" : ""}`}>
                                 Signup
                             </button>
                         </Link>

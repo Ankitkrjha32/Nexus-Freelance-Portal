@@ -114,4 +114,7 @@
     --color-pure-greys-700: #2d2d2d;
     --color-pure-greys-800: #171717;
     --color-pure-greys-900: #141414;
+
+    --maxContent: 1260px;
+    --maxContentTab: 650px;
 }
