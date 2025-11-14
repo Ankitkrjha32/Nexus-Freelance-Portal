@@ -3,12 +3,18 @@ import validator from "validator";
 import bcrypt from "bcryptJs";
 import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema({
-  name: {
+  firstName: {
     type: String,
     required: [true, "Please enter your Name!"],
     minLength: [3, "Name must contain at least 3 Characters!"],
     maxLength: [30, "Name cannot exceed 30 Characters!"],
   },
+  
+  lastName: {
+    type: String
+  
+  },
+
   email: {
     type: String,
     required: [true, "Please enter your Email!"],
@@ -21,14 +27,22 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Please provide a Password!"],
-    minLength: [8, "Password must contain at least 8 characters!"],
+    minLength: [3, "Password must contain at least 8 characters!"],
     maxLength: [32, "Password cannot exceed 32 characters!"],
     select: false,
+  },
+  year: {
+    type:Number
+  },
+  branch:{
+    type:String,
+    required: [true, "Please select a branch"],
+    enum:["cse","me","ece"],
   },
   role: {
     type: String,
     required: [true, "Please select a role"],
-    enum: ["Job Seeker", "Employer"],
+    enum: ["Student","Professor","Admin"],
   },
   createdAt: {
     type: Date,
@@ -50,7 +64,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 userSchema.methods.getJWTToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
+  return jwt.sign({ id: this._id}, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };

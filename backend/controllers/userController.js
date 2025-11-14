@@ -4,26 +4,34 @@ import ErrorHandler from "../middlewares/error.js";
 import { sendToken } from "../utils/jwtToken.js";
 
 export const register = catchAsyncErrors(async (req, res, next) => {
-  const { name, email, phone, password, role } = req.body;
-  if (!name || !email || !phone || !password || !role) {
+  const { firstName,lastName, email, phone, password, role,branch,year } = req.body;
+  if (!firstName || !email || !phone || !password || !role ||!branch ||!year) {
     return next(new ErrorHandler("Please fill full form!"));
   }
+
+
+  console.log(firstName,email,branch,phone,password,role,year);
+
+
   const isEmail = await User.findOne({ email });
   if (isEmail) {
     return next(new ErrorHandler("Email already registered!"));
   }
   const user = await User.create({
-    name,
+    firstName,
+    lastName,
     email,
     phone,
     password,
     role,
+    branch,
+    year
   });
   sendToken(user, 201, res, "User Registered!");
 });
 
 export const login = catchAsyncErrors(async (req, res, next) => {
-  const { email, password, role } = req.body;
+  const { email, password, role ,branch} = req.body;
   if (!email || !password || !role) {
     return next(new ErrorHandler("Please provide email ,password and role."));
   }
@@ -40,7 +48,7 @@ export const login = catchAsyncErrors(async (req, res, next) => {
       new ErrorHandler(`User with provided email and ${role} not found!`, 404)
     );
   }
-  sendToken(user, 201, res, "User Logged In!");
+  sendToken(user, 201, res, `User Logged In with role ${role} !`);
 });
 
 export const logout = catchAsyncErrors(async (req, res, next) => {

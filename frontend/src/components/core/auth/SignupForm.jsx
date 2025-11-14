@@ -28,7 +28,7 @@ const SignUpForm = () => {
     }
     function submitHandler(event) {
         event.preventDefault();
-        console.log(formData);
+        console.log("formdata is ",formData);
         console.log(accountType);
         if (formData.createPassword !== formData.confirmPassword) {
             toast.error("Passwords Do Not Match");
@@ -38,6 +38,8 @@ const SignUpForm = () => {
             ...formData,
             accountType,
         };
+
+        console.log("signupData",signupData)
 
         // Setting signup data to state
         // To be used after otp verification
