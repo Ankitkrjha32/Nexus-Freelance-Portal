@@ -4,12 +4,13 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-// import { login } from "../../../services/operations/authAPI";
+import { login } from "../../../services/operations/authAPI";
 
 const LoginForm = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
+    const [accountType, setAccountType] = useState("Student");
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -24,10 +25,33 @@ const LoginForm = () => {
     function submitHandler(event) {
         event.preventDefault();
         console.log(formData);
-        dispatch(login(email, password, navigate));
+        dispatch(login(email, password, accountType, navigate));
     }
     return (
         <form onSubmit={submitHandler} className=" w-[70%] mb-7">
+            <div className="bg-amber-300 rounded-2xl w-fit flex flex-row justify-between p-1 mb-7">
+                <button
+                    className={`py-2 px-6 rounded-2xl ${accountType === "Student" ? "bg-amber-400" : "bg-amber-300"}`}
+                    onClick={() => setAccountType("Student")}
+                    type="button"
+                >
+                    Student
+                </button>
+                <button
+                    className={`py-2 px-6 rounded-2xl ${accountType === "Professor" ? "bg-amber-400" : "bg-amber-300"}`}
+                    onClick={() => setAccountType("Professor")}
+                    type="button"
+                >
+                    Professor
+                </button>
+                <button
+                    className={`py-2 px-6 rounded-2xl ${accountType === "Admin" ? "bg-amber-400" : "bg-amber-300"}`}
+                    onClick={() => setAccountType("Admin")}
+                    type="button"
+                >
+                    Admin
+                </button>
+            </div>
             <label className="flex flex-col gap-3 mb-3">
                 <div className="flex flex-row gap-1">
                     <p>Email Address</p>

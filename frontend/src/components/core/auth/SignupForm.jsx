@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 
-// import { sendOtp } from "../../../services/operations/authAPI";
+import { signUp } from "../../../services/operations/authAPI";
 import { setSignupData } from "../../../slices/authSlice";
 import { toast } from "react-hot-toast";
 
@@ -17,6 +17,9 @@ const SignUpForm = () => {
         firstName: "",
         lastName: "",
         email: "",
+        phone: "",
+        branch: "cse",
+        year: "",
         createPassword: "",
         confirmPassword: "",
     });
@@ -42,20 +45,23 @@ const SignUpForm = () => {
         console.log("signupData",signupData)
 
         // Setting signup data to state
-        // To be used after otp verification
         dispatch(setSignupData(signupData));
-        // Send OTP to user for verification
-        // dispatch(sendOtp(formData.email, navigate));
+        
+        // Call signup API
+        dispatch(signUp(signupData, navigate));
 
         //reset
-        setFormData({
-            firstName: "",
-            lastName: "",
-            email: "",
-            createPassword: "",
-            confirmPassword: "",
-        });
-        setAccountType("Student");
+        // setFormData({
+        //     firstName: "",
+        //     lastName: "",
+        //     email: "",
+        //     phone: "",
+        //     branch: "cse",
+        //     year: "",
+        //     createPassword: "",
+        //     confirmPassword: "",
+        // });
+        // setAccountType("Student");
     }
     return (
         // <div></div>
@@ -133,6 +139,61 @@ const SignUpForm = () => {
                     onChange={changeHandler}
                     className="border-2 border-richblack-900 p-3 rounded-[7px] shadow-[0_1px_0_0_#ffffff]"
                 />
+            </label>
+
+            <div className="flex flex-row gap-3">
+                <label className="flex flex-col gap-3 mb-3 w-[50%]">
+                    <div className="flex flex-row gap-1">
+                        <p>Phone Number</p>
+                        <div className="text-red-500">*</div>
+                    </div>
+                    <input
+                        required
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        id="phone"
+                        placeholder="Enter Phone Number"
+                        onChange={changeHandler}
+                        className="border-2 border-richblack-900 p-3 rounded-[7px] shadow-[0_1px_0_0_#ffffff]"
+                    />
+                </label>
+
+                <label className="flex flex-col gap-3 mb-3 w-[50%]">
+                    <div className="flex flex-row gap-1">
+                        <p>Year</p>
+                        <div className="text-red-500">*</div>
+                    </div>
+                    <input
+                        required
+                        type="number"
+                        name="year"
+                        value={formData.year}
+                        id="year"
+                        placeholder="Enter Year (e.g., 2023)"
+                        onChange={changeHandler}
+                        className="border-2 border-richblack-900 p-3 rounded-[7px] shadow-[0_1px_0_0_#ffffff]"
+                    />
+                </label>
+            </div>
+
+            <label className="flex flex-col gap-3 mb-3">
+                <div className="flex flex-row gap-1">
+                    <p>Branch</p>
+                    <div className="text-red-500">*</div>
+                </div>
+                <select
+                    required
+                    name="branch"
+                    value={formData.branch}
+                    id="branch"
+                    onChange={changeHandler}
+                    className="border-2 border-richblack-900 p-3 rounded-[7px] shadow-[0_1px_0_0_#ffffff]"
+                >
+                    <option value="cse">Computer Science Engineering (CSE)</option>
+                    <option value="me">Mechanical Engineering (ME)</option>
+                    <option value="ece">Electronics & Communication Engineering (ECE)</option>
+                </select>
             </label>
 
             <div className="flex flex-row gap-3">

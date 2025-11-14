@@ -33,7 +33,7 @@ const ProfileDropDown = () => {
                             Dashboard
                         </div>
                     </Link>
-                    <Link to="/dashboard/applications" onClick={() => setIsOpen(false)}>
+                    <Link to="/my-applications" onClick={() => setIsOpen(false)}>
                         <div className="flex w-full items-center gap-x-1 py-[10px] px-[12px] text-sm text-richblack-900 hover:bg-richblack-700 hover:text-richblack-25">
                             <FiFileText className="text-lg" />
                             My Applications
