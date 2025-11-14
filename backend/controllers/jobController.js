@@ -1,6 +1,7 @@
 import { catchAsyncErrors } from "../middlewares/catchAsyncError.js";
 import { Job } from "../models/jobSchema.js";
 import ErrorHandler from "../middlewares/error.js";
+import cloudinary from "cloudinary";
 
 export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
   const jobs = await Job.find({ expired: false });
@@ -12,11 +13,13 @@ export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
 
 export const postJob = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
-  if (role === "Job Seeker") {
+  // Both Students and Professors can post jobs
+  if (role !== "Student" && role !== "Professor") {
     return next(
-      new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
+      new ErrorHandler("Only Students and Professors can post jobs.", 400)
     );
   }
+  
   const {
     title,
     description,
@@ -47,6 +50,58 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
       new ErrorHandler("Cannot Enter Fixed and Ranged Salary together.", 400)
     );
   }
+
+  // Handle optional document/attachment upload
+  let jobDocument = {};
+  if (req.files && req.files.jobDocument) {
+    const { jobDocument: uploadedFile } = req.files;
+    
+    const allowedFormats = [
+      "image/png", 
+      "image/jpeg", 
+      "image/webp",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ];
+    
+    if (!allowedFormats.includes(uploadedFile.mimetype)) {
+      return next(
+        new ErrorHandler(
+          "Invalid file type. Please upload PNG, JPEG, WEBP, PDF, or DOC file.", 
+          400
+        )
+      );
+    }
+
+    try {
+      const cloudinaryResponse = await cloudinary.uploader.upload(
+        uploadedFile.tempFilePath,
+        {
+          folder: "job_documents"
+        }
+      );
+
+      if (!cloudinaryResponse || cloudinaryResponse.error) {
+        console.error(
+          "Cloudinary Error:",
+          cloudinaryResponse.error || "Unknown Cloudinary error"
+        );
+        return next(
+          new ErrorHandler("Failed to upload document to Cloudinary", 500)
+        );
+      }
+
+      jobDocument = {
+        public_id: cloudinaryResponse.public_id,
+        url: cloudinaryResponse.secure_url,
+      };
+    } catch (error) {
+      console.error("Upload error:", error);
+      return next(new ErrorHandler("Failed to upload document", 500));
+    }
+  }
+
   const postedBy = req.user._id;
   const job = await Job.create({
     title,
@@ -59,7 +114,9 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
     salaryFrom,
     salaryTo,
     postedBy,
+    jobDocument: Object.keys(jobDocument).length > 0 ? jobDocument : undefined,
   });
+  
   res.status(200).json({
     success: true,
     message: "Job Posted Successfully!",
@@ -69,9 +126,10 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
 
 export const getMyJobs = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
-  if (role === "Job Seeker") {
+  // Only Students and Professors can view their posted jobs
+  if (role !== "Student" && role !== "Professor") {
     return next(
-      new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
+      new ErrorHandler("Only Students and Professors can view their jobs.", 400)
     );
   }
   const myJobs = await Job.find({ postedBy: req.user._id });
@@ -83,9 +141,9 @@ export const getMyJobs = catchAsyncErrors(async (req, res, next) => {
 
 export const updateJob = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
-  if (role === "Job Seeker") {
+  if (role !== "Student" && role !== "Professor") {
     return next(
-      new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
+      new ErrorHandler("Only Students and Professors can update jobs.", 400)
     );
   }
   const { id } = req.params;
@@ -93,6 +151,70 @@ export const updateJob = catchAsyncErrors(async (req, res, next) => {
   if (!job) {
     return next(new ErrorHandler("OOPS! Job not found.", 404));
   }
+  // Ensure user can only update their own job
+  if (job.postedBy.toString() !== req.user._id.toString()) {
+    return next(new ErrorHandler("You are not authorized to update this job!", 403));
+  }
+
+  // Handle optional document/attachment upload for update
+  if (req.files && req.files.jobDocument) {
+    const { jobDocument: uploadedFile } = req.files;
+    
+    const allowedFormats = [
+      "image/png", 
+      "image/jpeg", 
+      "image/webp",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ];
+    
+    if (!allowedFormats.includes(uploadedFile.mimetype)) {
+      return next(
+        new ErrorHandler(
+          "Invalid file type. Please upload PNG, JPEG, WEBP, PDF, or DOC file.", 
+          400
+        )
+      );
+    }
+
+    // Delete old document from Cloudinary if exists
+    if (job.jobDocument && job.jobDocument.public_id) {
+      try {
+        await cloudinary.uploader.destroy(job.jobDocument.public_id);
+      } catch (error) {
+        console.error("Error deleting old document:", error);
+      }
+    }
+
+    try {
+      const cloudinaryResponse = await cloudinary.uploader.upload(
+        uploadedFile.tempFilePath,
+        {
+          folder: "job_documents"
+        }
+      );
+
+      if (!cloudinaryResponse || cloudinaryResponse.error) {
+        console.error(
+          "Cloudinary Error:",
+          cloudinaryResponse.error || "Unknown Cloudinary error"
+        );
+        return next(
+          new ErrorHandler("Failed to upload document to Cloudinary", 500)
+        );
+      }
+
+      req.body.jobDocument = {
+        public_id: cloudinaryResponse.public_id,
+        url: cloudinaryResponse.secure_url,
+      };
+    } catch (error) {
+      console.error("Upload error:", error);
+      return next(new ErrorHandler("Failed to upload document", 500));
+    }
+  }
+
   job = await Job.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
@@ -101,14 +223,15 @@ export const updateJob = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Job Updated!",
+    job,
   });
 });
 
 export const deleteJob = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
-  if (role === "Job Seeker") {
+  if (role !== "Student" && role !== "Professor") {
     return next(
-      new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
+      new ErrorHandler("Only Students and Professors can delete jobs.", 400)
     );
   }
   const { id } = req.params;
@@ -116,6 +239,20 @@ export const deleteJob = catchAsyncErrors(async (req, res, next) => {
   if (!job) {
     return next(new ErrorHandler("OOPS! Job not found.", 404));
   }
+  // Ensure user can only delete their own job
+  if (job.postedBy.toString() !== req.user._id.toString()) {
+    return next(new ErrorHandler("You are not authorized to delete this job!", 403));
+  }
+  
+  // Delete document from Cloudinary if exists
+  if (job.jobDocument && job.jobDocument.public_id) {
+    try {
+      await cloudinary.uploader.destroy(job.jobDocument.public_id);
+    } catch (error) {
+      console.error("Error deleting document from Cloudinary:", error);
+    }
+  }
+  
   await job.deleteOne();
   res.status(200).json({
     success: true,

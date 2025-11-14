@@ -8,7 +8,7 @@ export const testimonials = [
     },
     {
         name: "Rohit Mehra",
-        job: "Instructor - Mechanical Dept.",
+        job: "Professor - Mechanical Dept.",
         testimonial: "I posted a research assistant role and got amazing responses. The quality of talent here is exceptional.",
         rating: "4",
         pfp: "/assets/home/testimonial/Rohit.jpeg",
