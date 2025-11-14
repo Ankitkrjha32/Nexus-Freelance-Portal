@@ -4,7 +4,7 @@ import ErrorHandler from "../middlewares/error.js";
 import cloudinary from "cloudinary";
 
 export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
-  const jobs = await Job.find({ expired: false });
+  const jobs = await Job.find({});
   res.status(200).json({
     success: true,
     jobs,
