@@ -44,6 +44,13 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please select a role"],
     enum: ["Student","Professor","Admin"],
   },
+   profilePic: {type: String, default: "/profile.png"},
+    lastLogin: { type: Date, default: Date.now },
+    isVerified: { type: Boolean, default: false },
+    resetPasswordToken: { type: String },
+    resetPasswordExpiresAt: { type: Date },
+    verificationToken: { type: String, default: null },
+    verificationTokenExpiresAt: { type: Date },
   createdAt: {
     type: Date,
     default: Date.now,

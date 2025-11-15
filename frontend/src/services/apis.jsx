@@ -2,6 +2,7 @@ const BASE_URL = "http://localhost:4000/api/v1";
 
 export const endpoints = {
     SIGNUP_API: BASE_URL + "/user/register",
+    VERIFY_EMAIL_API: BASE_URL + "/user/verify-email",
     LOGIN_API: BASE_URL + "/user/login",
     GET_ALL_JOBS_API: BASE_URL + "/job/getall",
     APPLY_JOB_API: BASE_URL + "/application/apply",
