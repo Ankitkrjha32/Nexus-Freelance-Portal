@@ -10,4 +10,7 @@ export const endpoints = {
     POST_JOB_API: BASE_URL + "/job/post",
     GET_MY_JOBS_API: BASE_URL + "/job/getmyjobs",
     DELETE_JOB_API: BASE_URL + "/job/delete",
+    GET_PROFESSOR_APPLICATIONS_API: BASE_URL + "/application/professor/applications",
+    UPDATE_APPLICATION_STATUS_API: BASE_URL + "/application/update-status",
+    UPDATE_JOB_API: BASE_URL + "/job/update",
 };

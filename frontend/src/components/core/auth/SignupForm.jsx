@@ -161,7 +161,7 @@ const SignUpForm = () => {
 
                 <label className="flex flex-col gap-3 mb-3 w-[50%]">
                     <div className="flex flex-row gap-1">
-                        <p>Year</p>
+                        <p> Passout Year</p>
                         <div className="text-red-500">*</div>
                     </div>
                     <input

@@ -26,11 +26,18 @@ const AllJobs = () => {
     const fetchJobs = async () => {
       setLoading(true);
       const result = await dispatch(getAllJobs());
+
+
+      console.log("result from dispatch getAllJobs is ", result);
       setJobs(result);
+     
       setLoading(false);
     };
     fetchJobs();
   }, [dispatch]);
+
+
+   console.log("jobs is ",jobs)
 
   // Get unique categories and cities
   const categories = ["All", ...new Set(jobs.map((job) => job.category))];
@@ -226,6 +233,17 @@ const AllJobs = () => {
                         </p>
                       </div>
                     </div>
+{/* /// job document */}
+                    <div className="flex items-center gap-3">
+                      <FaMoneyBillWave className="text-pink-600 flex-shrink-0" />
+                      <div className="text-sm">
+                        <p className="font-semibold text-gray-700">
+                          <a href={job.jobDocument?.url ?? undefined} target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:underline">
+                            View Job Description
+                          </a>
+                        </p>
+                      </div>
+                    </div>
 
                     {/* Posted Date */}
                     <div className="flex items-center gap-3">
@@ -248,26 +266,33 @@ const AllJobs = () => {
                             : "bg-green-100 text-green-700"
                         }`}
                       >
-                        {job.expired ? "Expired" : "Active"}
+                        {job.expired ? "Closed" : "Active"}
                       </span>
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 flex items-center gap-2"
+                      <button 
+                        className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 flex items-center gap-2 ${
+                          job.expired 
+                            ? "bg-gray-400 cursor-not-allowed" 
+                            : "bg-blue-600 hover:bg-blue-700 text-white"
+                        }`}
                         onClick={() => handleApplyNow(job)}
                         disabled={job.expired}
                       >
-                        Apply Now
-                        <svg
-                          className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
+                        {job.expired ? "Job Closed" : "Apply Now"}
+                        {!job.expired && (
+                          <svg
+                            className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        )}
                       </button>
                     </div>
                   </div>

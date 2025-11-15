@@ -210,14 +210,23 @@ const MyApplications = () => {
                                 </span>
                                 
                                 <div className="flex flex-col gap-2">
-                                    <a
-                                        href={application.resume?.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2 border border-blue-500 text-blue-600 rounded-lg px-4 py-2 text-sm hover:bg-blue-50 transition"
-                                    >
-                                        <FaFileDownload /> View Resume
-                                    </a>
+                                    {application.resume?.url ? (
+                                        <a
+                                            href={application.resume.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 border border-blue-500 text-blue-600 rounded-lg px-4 py-2 text-sm hover:bg-blue-50 transition"
+                                        >
+                                            <FaFileDownload /> View Resume
+                                        </a>
+                                    ) : (
+                                        <button
+                                            disabled
+                                            className="flex items-center gap-2 border border-gray-400 text-gray-400 rounded-lg px-4 py-2 text-sm cursor-not-allowed"
+                                        >
+                                            <FaFileDownload /> No Resume
+                                        </button>
+                                    )}
                                     
                                     <button 
                                         onClick={() => handleDelete(application._id)}

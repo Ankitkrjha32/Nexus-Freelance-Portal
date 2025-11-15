@@ -1,82 +1,197 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getMyJobs, deleteJob, getProfessorApplications, toggleJobStatus } from "../services/operations/jobAPI";
+import ViewApplicationsModal from "../components/common/ViewApplicationsModal";
 import { IoSearch } from "react-icons/io5";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaTrash, FaEdit, FaMapMarkerAlt, FaMoneyBillWave, FaCalendarAlt, FaTags, FaToggleOn, FaToggleOff } from "react-icons/fa";
 import useOutsideClick from "../hooks/useOutsideClick";
-
 import { IoIosArrowUp, IoIosArrowDown, IoIosCheckmark } from "react-icons/io";
 
 const MyJobs = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [jobs, setJobs] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState("All Status");
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [applications, setApplications] = useState([]);
+    const [loadingApplications, setLoadingApplications] = useState(false);
     const dropdownRef = useRef(null);
 
     useOutsideClick(dropdownRef, () => setIsOpen(false));
+
+    useEffect(() => {
+        const fetchJobs = async () => {
+            setLoading(true);
+            const result = await dispatch(getMyJobs());
+            setJobs(result);
+            setLoading(false);
+        };
+        fetchJobs();
+    }, [dispatch]);
+
     const handleSelect = (option) => {
         setStatusFilter(option);
         setIsOpen(false);
     };
 
-    const jobs = [
-        {
-            title: "Build a React Dashboard",
-            tags: ["React", "TypeScript", "Tailwind"],
-            price: 500,
-            status: "Active",
-        },
-        {
-            title: "Design Modern Landing Page",
-            tags: ["Figma", "UI/UX", "Web Design"],
-            price: 350,
-            status: "Completed",
-        },
-        {
-            title: "API Integration Work",
-            tags: ["Node.js", "Express", "REST"],
-            price: 450,
-            status: "Pending",
-        },
-    ];
+    const handleDelete = async (jobId) => {
+        if (window.confirm("Are you sure you want to delete this job posting?")) {
+            const result = await dispatch(deleteJob(jobId));
+            if (result) {
+                setJobs(jobs.filter(job => job._id !== jobId));
+            }
+        }
+    };
 
-    const options = ["All Status", "Active", "Pending", "Completed"];
+    const handleViewApplications = async (job) => {
+        setSelectedJob(job);
+        setLoadingApplications(true);
+        setIsModalOpen(true);
+        
+        const result = await dispatch(getProfessorApplications());
+        
+        // Filter applications for the selected job
+        const jobApplications = result.filter(app => app.jobId?._id === job._id);
+        setApplications(jobApplications);
+        setLoadingApplications(false);
+    };
+
+    const handleStatusUpdate = async () => {
+        // Refresh applications after status update
+        if (selectedJob) {
+            setLoadingApplications(true);
+            const result = await dispatch(getProfessorApplications());
+            const jobApplications = result.filter(app => app.jobId?._id === selectedJob._id);
+            setApplications(jobApplications);
+            setLoadingApplications(false);
+        }
+    };
+
+    const handleToggleJobStatus = async (jobId, currentStatus) => {
+        const newStatus = !currentStatus;
+        const confirmMessage = newStatus 
+            ? "Are you sure you want to close this job? Students won't be able to apply anymore."
+            : "Are you sure you want to reopen this job? Students will be able to apply again.";
+        
+        if (window.confirm(confirmMessage)) {
+            const result = await dispatch(toggleJobStatus(jobId, newStatus));
+            if (result) {
+                // Update the job in the local state
+                setJobs(jobs.map(job => 
+                    job._id === jobId ? { ...job, expired: newStatus } : job
+                ));
+            }
+        }
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedJob(null);
+        setApplications([]);
+    };
+
+    const options = ["All Status", "Active", "Expired"];
 
     // Filter jobs based on search and status
     const filteredJobs = jobs.filter((job) => {
-        const matchesStatus = statusFilter === "All Status" || job.status === statusFilter;
+        const jobStatus = job.expired ? "Expired" : "Active";
+        const matchesStatus = statusFilter === "All Status" || jobStatus === statusFilter;
         const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesStatus && matchesSearch;
     });
 
+    // Format salary
+    const formatSalary = (job) => {
+        if (job.fixedSalary && job.fixedSalary > 0) {
+            return `₹${job.fixedSalary.toLocaleString()}/month`;
+        } else if (job.salaryFrom && job.salaryTo) {
+            return `₹${job.salaryFrom.toLocaleString()} - ₹${job.salaryTo.toLocaleString()}/month`;
+        }
+        return "Not specified";
+    };
+
+    // Format date
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 mt-14">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600 text-lg">Loading your jobs...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-[#f9fafc] flex flex-col items-center py-10 px-6 mt-10 w-full">
+        <div className="min-h-screen bg-[#f9fafc] flex flex-col items-center py-10 px-6 mt-14 w-full">
             {/* Header */}
-            <h1 className="text-3xl font-bold text-[#0b1957] mb-8 w-full max-w-4xl">My Posted Jobs</h1>
+            <div className="w-full max-w-6xl mb-8">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-4xl font-bold text-[#0b1957] mb-2">My Posted Jobs</h1>
+                        <p className="text-gray-600">Manage and track your job postings</p>
+                    </div>
+                    <button
+                        onClick={() => navigate("/post-job")}
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition shadow-lg"
+                    >
+                        + Post New Job
+                    </button>
+                </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-6xl mb-6">
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                    <p className="text-gray-500 text-sm">Total Jobs Posted</p>
+                    <p className="text-2xl font-bold text-blue-600">{jobs.length}</p>
+                </div>
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                    <p className="text-gray-500 text-sm">Active Jobs</p>
+                    <p className="text-2xl font-bold text-green-600">
+                        {jobs.filter(job => !job.expired).length}
+                    </p>
+                </div>
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                    <p className="text-gray-500 text-sm">Expired Jobs</p>
+                    <p className="text-2xl font-bold text-red-600">
+                        {jobs.filter(job => job.expired).length}
+                    </p>
+                </div>
+            </div>
 
             {/* Search + Filter */}
-            <div className="flex w-full max-w-4xl items-center gap-4 mb-6 relative">
+            <div className="flex w-full max-w-6xl items-center gap-4 mb-6 relative">
                 <div className="relative w-full">
                     <IoSearch className="absolute left-4 top-3.5 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search jobs..."
+                        placeholder="Search jobs by title..."
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
-                {/* <select
-                    className="border border-gray-300 rounded-lg py-2 px-4 cursor-pointer focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                    <option>All Status</option>
-                    <option>Active</option>
-                    <option>Completed</option>
-                    <option>Pending</option>
-                </select> */}
-                <div className="w-[40%] relative">
-                    <div className="w-full border border-gray-200 p-2 relative text-center rounded-lg" onClick={() => setIsOpen(!isOpen)}>
+                <div className="w-[40%] relative" ref={dropdownRef}>
+                    <div 
+                        className="w-full border border-gray-200 p-2 relative text-center rounded-lg cursor-pointer hover:bg-gray-50 transition" 
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
                         {statusFilter}
                         {isOpen ? (
                             <IoIosArrowUp className="absolute top-4 right-7" />
@@ -85,11 +200,11 @@ const MyJobs = () => {
                         )}
                     </div>
                     {isOpen && (
-                        <div className="flex flex-col items-center w-full absolute top-14 rounded-lg p-2 border border-gray-400 z-10">
+                        <div className="flex flex-col items-center w-full absolute top-14 rounded-lg p-2 border border-gray-400 z-10 bg-white shadow-lg">
                             {options.map((option) => (
                                 <div
                                     key={option}
-                                    className={`p-1 w-full rounded-lg flex items-center justify-center relative ${
+                                    className={`p-2 w-full rounded-lg flex items-center justify-center relative cursor-pointer hover:bg-gray-100 transition ${
                                         statusFilter === option ? "bg-[#89cff0]" : "bg-white"
                                     }`}
                                     onClick={() => handleSelect(option)}
@@ -108,47 +223,130 @@ const MyJobs = () => {
             </div>
 
             {/* Job Cards */}
-            <div className="flex flex-col w-full max-w-4xl gap-5">
-                {filteredJobs.map((job, index) => (
+            <div className="flex flex-col w-full max-w-6xl gap-5">
+                {filteredJobs.map((job) => (
                     <div
-                        key={index}
-                        className="w-full bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg hover:scale-[1.04] transition-all duration-300"
+                        key={job._id}
+                        className="w-full bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300"
                     >
                         <div className="flex justify-between items-start">
-                            <div>
-                                <h2 className="text-xl font-semibold text-[#0b1957] mb-3">{job.title}</h2>
-                                <div className="flex flex-wrap gap-2 mb-3">
-                                    {job.tags.map((tag, i) => (
-                                        <span key={i} className="bg-blue-25 text-[#0096ff] px-3 py-1 rounded-md text-sm">
-                                            {tag}
-                                        </span>
-                                    ))}
+                            <div className="flex-1">
+                                <div className="flex items-start justify-between mb-3">
+                                    <h2 className="text-2xl font-semibold text-[#0b1957] flex-1">
+                                        {job.title}
+                                    </h2>
+
+                                    
+                                    <span
+                                        className={`text-sm font-semibold px-4 py-2 rounded-full ml-4 ${
+                                            job.expired
+                                                ? "bg-red-100 text-red-700"
+                                                : "bg-green-100 text-green-700"
+                                        }`}
+                                    >
+                                        {job.expired ? "Expired" : "Active"}
+                                    </span>
                                 </div>
-                                <p className="text-gray-600 font-medium">₹{job.price}</p>
+
+                                <p className="text-gray-600 mb-4 line-clamp-2">{job.description}</p>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                                    <div className="flex gap-3 items-center text-gray-600">
+                                        <FaTags className="text-blue-600" />
+                                        <span className="font-medium">Category:</span>
+                                        <span>{job.category}</span>
+                                    </div>
+
+                                    <div className="flex gap-3 items-center text-gray-600">
+                                        <FaMapMarkerAlt className="text-blue-600" />
+                                        <span className="font-medium">Location:</span>
+                                        <span>{job.city}, {job.country}</span>
+                                    </div>
+
+                                    <div className="flex gap-3 items-center text-gray-600">
+                                        <FaMoneyBillWave className="text-green-600" />
+                                        <span className="font-medium">Salary:</span>
+                                        <span>{formatSalary(job)}</span>
+                                    </div>
+
+                                    <div className="flex gap-3 items-center text-gray-600">
+                                        <FaCalendarAlt className="text-purple-600" />
+                                        <span className="font-medium">Posted:</span>
+                                        <span>{formatDate(job.jobPostedOn)}</span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gray-50 p-3 rounded-lg">
+                                    <p className="text-sm text-gray-600">
+                                        <span className="font-medium">Full Address:</span> {job.location}
+                                    </p>
+                                </div>
                             </div>
 
-                            <div className="flex flex-col items-end gap-7">
-                                <span
-                                    className={`text-sm px-3 py-1 rounded-full ${
-                                        job.status === "Active"
-                                            ? "bg-[#5c5cff] text-white"
-                                            : job.status === "Completed"
-                                            ? "bg-green-100 text-green-500"
-                                            : "bg-red-300 text-red-500"
+                            <div className="flex flex-col gap-2 ml-4">
+                                <button 
+                                    onClick={() => handleViewApplications(job)}
+                                    className="flex items-center gap-2 border border-blue-500 text-blue-600 rounded-lg px-4 py-2 text-sm hover:bg-blue-50 transition whitespace-nowrap"
+                                >
+                                    <FaEye /> View Applications
+                                </button>
+                                <button 
+                                    onClick={() => handleToggleJobStatus(job._id, job.expired)}
+                                    className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm hover:bg-opacity-20 transition whitespace-nowrap ${
+                                        job.expired 
+                                            ? "border-green-500 text-green-600 hover:bg-green-50" 
+                                            : "border-orange-500 text-orange-600 hover:bg-orange-50"
                                     }`}
                                 >
-                                    {job.status}
-                                </span>
-                                <button className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 text-sm text-[#0b1957] hover:bg-gray-100 transition">
-                                    <FaEye /> View Details
+                                    {job.expired ? (
+                                        <>
+                                            <FaToggleOff /> Reopen Job
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaToggleOn /> Close Job
+                                        </>
+                                    )}
+                                </button>
+                                <button 
+                                    className="flex items-center gap-2 border border-green-500 text-green-600 rounded-lg px-4 py-2 text-sm hover:bg-green-50 transition whitespace-nowrap"
+                                >
+                                    <FaEdit /> Edit Job
+                                </button>
+                                <button 
+                                    onClick={() => handleDelete(job._id)}
+                                    className="flex items-center gap-2 border border-red-500 text-red-600 rounded-lg px-4 py-2 text-sm hover:bg-red-50 transition whitespace-nowrap"
+                                >
+                                    <FaTrash /> Delete
                                 </button>
                             </div>
                         </div>
                     </div>
                 ))}
 
-                {filteredJobs.length === 0 && <p className="text-gray-500 text-center mt-10">No jobs found.</p>}
+                {filteredJobs.length === 0 && (
+                    <div className="text-center py-16">
+                        <FaTags className="text-6xl text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500 text-lg">No jobs found.</p>
+                        <p className="text-gray-400 text-sm mt-2">
+                            {jobs.length === 0 
+                                ? "You haven't posted any jobs yet. Click 'Post New Job' to get started!"
+                                : "Try adjusting your filters or search term."}
+                        </p>
+                    </div>
+                )}
             </div>
+
+            {/* Applications Modal */}
+            {selectedJob && (
+                <ViewApplicationsModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    applications={loadingApplications ? [] : applications}
+                    jobTitle={selectedJob.title}
+                    onStatusUpdate={handleStatusUpdate}
+                />
+            )}
         </div>
     );
 };

@@ -6,7 +6,7 @@ import { FiFileText } from "react-icons/fi";
 import { BsBriefcase } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-// import { logout } from "../../../services/operations/authAPI";
+import { logout } from "../../../services/operations/authAPI";
 
 const ProfileDropDown = () => {
     const { user } = useSelector((state) => state.profile);
@@ -53,7 +53,7 @@ const ProfileDropDown = () => {
                     </Link>
                     <div
                         onClick={() => {
-                            // dispatch(logout(navigate));
+                            dispatch(logout(navigate));
                             setIsOpen(false);
                         }}
                         className="flex w-full items-center gap-x-1 py-[10px] px-[12px] text-sm text-richblack-900 hover:bg-richblack-700 hover:text-richblack-25"

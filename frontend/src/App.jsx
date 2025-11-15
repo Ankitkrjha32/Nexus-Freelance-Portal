@@ -12,7 +12,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Category from "./pages/Category";
 import ScrollToTop from "./components/common/ScrollToTop";
-import MyJobs from "./pages/MyPostedJobs";
+import MyPostedJobs from "./pages/MyPostedJobs";
 import MyApplications from "./pages/MyApplications";
 import AllJobs from "./pages/AllJobs";
 import PostJob from "./pages/PostJob";

@@ -2,7 +2,7 @@ import { toast } from "react-hot-toast";
 import { apiConnector } from "../apiConnector";
 import { endpoints } from "../apis";
 
-const { GET_ALL_JOBS_API, APPLY_JOB_API, GET_STUDENT_APPLICATIONS_API, DELETE_APPLICATION_API, POST_JOB_API } = endpoints;
+const { GET_ALL_JOBS_API, APPLY_JOB_API, GET_STUDENT_APPLICATIONS_API, DELETE_APPLICATION_API, POST_JOB_API, GET_MY_JOBS_API, DELETE_JOB_API, GET_PROFESSOR_APPLICATIONS_API, UPDATE_APPLICATION_STATUS_API, UPDATE_JOB_API } = endpoints;
 
 export function getAllJobs() {
   return async (dispatch) => {
@@ -113,6 +113,120 @@ export function postJob(jobData, navigate) {
     } catch (error) {
       console.log("POST_JOB_API ERROR............", error);
       toast.error(error?.response?.data?.message || "Could not post job");
+    }
+    toast.dismiss(toastId);
+    return result;
+  };
+}
+
+export function getMyJobs() {
+  return async (dispatch) => {
+    const toastId = toast.loading("Loading your jobs...");
+    let result = [];
+    try {
+      const response = await apiConnector("GET", GET_MY_JOBS_API);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+
+      result = response.data.myJobs;
+      toast.success("Jobs loaded successfully");
+    } catch (error) {
+      console.log("GET_MY_JOBS_API ERROR............", error);
+      toast.error(error?.response?.data?.message || "Could not fetch your jobs");
+    }
+    toast.dismiss(toastId);
+    return result;
+  };
+}
+
+export function deleteJob(jobId) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Deleting job...");
+    let result = false;
+    try {
+      const response = await apiConnector("DELETE", `${DELETE_JOB_API}/${jobId}`);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+
+      result = true;
+      toast.success("Job deleted successfully");
+    } catch (error) {
+      console.log("DELETE_JOB_API ERROR............", error);
+      toast.error(error?.response?.data?.message || "Could not delete job");
+    }
+    toast.dismiss(toastId);
+    return result;
+  };
+}
+
+export function getProfessorApplications() {
+  return async (dispatch) => {
+    const toastId = toast.loading("Loading applications...");
+    let result = [];
+    try {
+      const response = await apiConnector("GET", GET_PROFESSOR_APPLICATIONS_API);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+
+      result = response.data.applications;
+      toast.success("Applications loaded successfully");
+    } catch (error) {
+      console.log("GET_PROFESSOR_APPLICATIONS_API ERROR............", error);
+      toast.error(error?.response?.data?.message || "Could not fetch applications");
+    }
+    toast.dismiss(toastId);
+    return result;
+  };
+}
+
+export function updateApplicationStatus(applicationId, status) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Updating status...");
+    let result = null;
+    try {
+      const response = await apiConnector("PUT", `${UPDATE_APPLICATION_STATUS_API}/${applicationId}`, {
+        status,
+      });
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+
+      result = response.data;
+      toast.success(`Application ${status.toLowerCase()} successfully!`);
+    } catch (error) {
+      console.log("UPDATE_APPLICATION_STATUS_API ERROR............", error);
+      toast.error(error?.response?.data?.message || "Could not update status");
+    }
+    toast.dismiss(toastId);
+    return result;
+  };
+}
+
+export function toggleJobStatus(jobId, expired) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Updating job status...");
+    let result = null;
+    try {
+      const response = await apiConnector("PUT", `${UPDATE_JOB_API}/${jobId}`, {
+        expired,
+      });
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+
+      result = response.data;
+      toast.success(expired ? "Job closed successfully!" : "Job reopened successfully!");
+    } catch (error) {
+      console.log("TOGGLE_JOB_STATUS_API ERROR............", error);
+      toast.error(error?.response?.data?.message || "Could not update job status");
     }
     toast.dismiss(toastId);
     return result;
