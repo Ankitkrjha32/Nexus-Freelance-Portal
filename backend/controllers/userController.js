@@ -96,13 +96,13 @@ export const register = catchAsyncErrors(async (req, res, next) => {
         });
 
         await newUser.save();
-        await sendVerificationEamil([newUser.email,"ankitkrjha32@gmail.com","btech41522012@dseu.ac.in"], verificationToken);
+        await sendVerificationEamil(newUser.email, verificationToken);
 
         //  sendToken(newUser, 201, res, " OTP Sent To your Email Please Verify!");
         res.status(201).json({
             success: true,
             message: " OTP has been sent to your email Please verify.",
-            newUser,
+            
         });
 
    }catch(err){

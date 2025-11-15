@@ -199,6 +199,8 @@ export function updateApplicationStatus(applicationId, status) {
       }
 
       result = response.data;
+      console.log("respnse data in udpateapplication staus",response)
+      
       toast.success(`Application ${status.toLowerCase()} successfully!`);
     } catch (error) {
       console.log("UPDATE_APPLICATION_STATUS_API ERROR............", error);
