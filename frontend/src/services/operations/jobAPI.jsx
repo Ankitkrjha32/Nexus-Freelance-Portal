@@ -197,27 +197,29 @@ export function getProfessorApplications() {
 }
 
 export function updateApplicationStatus(applicationId, status) {
-    return async (dispatch) => {
-        const toastId = toast.loading("Updating status...");
-        let result = null;
-        try {
-            const response = await apiConnector("PUT", `${UPDATE_APPLICATION_STATUS_API}/${applicationId}`, {
-                status,
-            });
+  return async (dispatch) => {
+    const toastId = toast.loading("Updating status...");
+    let result = null;
+    try {
+      const response = await apiConnector("PUT", `${UPDATE_APPLICATION_STATUS_API}/${applicationId}`, {
+        status,
+      });
 
-            if (!response.data.success) {
-                throw new Error(response.data.message);
-            }
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
 
-            result = response.data;
-            toast.success(`Application ${status.toLowerCase()} successfully!`);
-        } catch (error) {
-            console.log("UPDATE_APPLICATION_STATUS_API ERROR............", error);
-            toast.error(error?.response?.data?.message || "Could not update status");
-        }
-        toast.dismiss(toastId);
-        return result;
-    };
+      result = response.data;
+      console.log("respnse data in udpateapplication staus",response)
+      
+      toast.success(`Application ${status.toLowerCase()} successfully!`);
+    } catch (error) {
+      console.log("UPDATE_APPLICATION_STATUS_API ERROR............", error);
+      toast.error(error?.response?.data?.message || "Could not update status");
+    }
+    toast.dismiss(toastId);
+    return result;
+  };
 }
 
 export function toggleJobStatus(jobId, expired) {

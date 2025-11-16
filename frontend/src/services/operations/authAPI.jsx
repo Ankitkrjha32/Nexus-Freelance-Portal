@@ -6,7 +6,7 @@ import { setUser } from "../../slices/profileSlice";
 import { apiConnector } from "../apiConnector";
 import { endpoints } from "../apis";
 
-const { SIGNUP_API, LOGIN_API } = endpoints;
+const { SIGNUP_API, VERIFY_EMAIL_API, LOGIN_API } = endpoints;
 
 export function signUp(signupData, navigate) {
     return async (dispatch) => {
@@ -31,14 +31,18 @@ export function signUp(signupData, navigate) {
             if (!response.data.success) {
                 throw new Error(response.data.message);
             }
-            toast.success("Signup Successful");
-            navigate("/login");
+            toast.success("OTP sent to your email. Please verify.");
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+            // Don't navigate yet, wait for OTP verification
+            return response.data;
         } catch (error) {
             console.log("SIGNUP API ERROR............", error);
             toast.error(error?.response?.data?.message || "Signup Failed");
+            dispatch(setLoading(false));
+            toast.dismiss(toastId);
+            return null;
         }
-        dispatch(setLoading(false));
-        toast.dismiss(toastId);
     };
 }
 
@@ -87,6 +91,32 @@ export function logout(navigate) {
         localStorage.removeItem("user");
         toast.success("Logged Out");
         navigate("/");
+    };
+}
+
+export function verifyEmail(otp, signupData, navigate) {
+    return async (dispatch) => {
+        const toastId = toast.loading("Verifying...");
+        dispatch(setLoading(true));
+        try {
+            const response = await apiConnector("POST", VERIFY_EMAIL_API, {
+                otp,
+            });
+
+            console.log("VERIFY EMAIL API RESPONSE............", response);
+
+            if (!response.data.success) {
+                throw new Error(response.data.message);
+            }
+
+            toast.success("Email Verified Successfully");
+            navigate("/login");
+        } catch (error) {
+            console.log("VERIFY EMAIL API ERROR............", error);
+            toast.error(error?.response?.data?.message || "Verification Failed");
+        }
+        dispatch(setLoading(false));
+        toast.dismiss(toastId);
     };
 }
 

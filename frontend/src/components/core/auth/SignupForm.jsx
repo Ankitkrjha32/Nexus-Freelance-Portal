@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 
-import { signUp } from "../../../services/operations/authAPI";
+import { signUp, verifyEmail } from "../../../services/operations/authAPI";
 import { setSignupData } from "../../../slices/authSlice";
 import { toast } from "react-hot-toast";
 
@@ -13,6 +13,8 @@ const SignUpForm = () => {
     const [showCreatePassword, setShowCreatePassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [accountType, setAccountType] = useState("Student");
+    const [showOtpModal, setShowOtpModal] = useState(false);
+    const [otp, setOtp] = useState("");
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -29,7 +31,8 @@ const SignUpForm = () => {
             [event.target.name]: event.target.value,
         }));
     }
-    function submitHandler(event) {
+    
+    async function submitHandler(event) {
         event.preventDefault();
         console.log("formdata is ", formData);
         console.log(accountType);
@@ -48,20 +51,27 @@ const SignUpForm = () => {
         dispatch(setSignupData(signupData));
 
         // Call signup API
-        dispatch(signUp(signupData, navigate));
-
-        //reset
-        // setFormData({
-        //     firstName: "",
-        //     lastName: "",
-        //     email: "",
-        //     phone: "",
-        //     branch: "cse",
-        //     year: "",
-        //     createPassword: "",
-        //     confirmPassword: "",
-        // });
-        // setAccountType("Student");
+        const result = await dispatch(signUp(signupData, navigate));
+        
+        // If OTP sent successfully, show OTP modal
+        if (result) {
+            setShowOtpModal(true);
+        }
+    }
+    
+    function handleVerifyOtp() {
+        if (!otp || otp.length !== 6) {
+            toast.error("Please enter a valid 6-digit OTP");
+            return;
+        }
+        
+        const signupData = {
+            ...formData,
+            accountType,
+        };
+        
+        dispatch(verifyEmail(otp, signupData, navigate));
+        setShowOtpModal(false);
     }
     return (
         // <div></div>
@@ -250,6 +260,49 @@ const SignUpForm = () => {
             <button type="submit" className="w-full bg-[#1E90FF] rounded-[7px] p-3 text-black mt-5">
                 Create Account
             </button>
+            
+            {/* OTP Modal */}
+            {showOtpModal && (
+                <div className="fixed inset-0 bg-pure-greys-100 bg-opacity-20 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                        <h2 className="text-2xl font-bold mb-4 text-gray-800">Verify Your Email</h2>
+                        <p className="text-gray-600 mb-6">
+                            We've sent a 6-digit OTP to <strong>{formData.email}</strong>
+                        </p>
+                        <label className="flex flex-col gap-3 mb-6">
+                            <div className="flex flex-row gap-1">
+                                <p className="font-semibold">Enter OTP</p>
+                                <div className="text-red-500">*</div>
+                            </div>
+                            <input
+                                type="text"
+                                maxLength="6"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                                placeholder="Enter 6-digit OTP"
+                                className="border-2 border-gray-300 p-3 rounded-lg text-center text-2xl tracking-widest font-semibold"
+                            />
+                        </label>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowOtpModal(false);
+                                    setOtp("");
+                                }}
+                                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleVerifyOtp}
+                                className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                            >
+                                Verify OTP
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </form>
     );
 };

@@ -4,6 +4,7 @@ import { Application } from "../models/applicationSchema.js";
 import { Job } from "../models/jobSchema.js";
 import { User } from "../models/userSchema.js";
 import cloudinary from "cloudinary";
+import { ApplicationStatus } from "../nodemailer/Email.js";
 
 // Student applies for a job with resume upload
 export const applyForJob = catchAsyncErrors(async (req, res, next) => {
@@ -191,18 +192,41 @@ export const updateApplicationStatus = catchAsyncErrors(
       return next(new ErrorHandler("Invalid status value.", 400));
     }
 
-    const application = await Application.findById(id);
+    // Populate the application with user and job details
+    const application = await Application.findById(id)
+      .populate({
+        path: 'applicantID.user',
+        select: 'firstName lastName email'
+      })
+      .populate({
+        path: 'employerID.user',
+        select: 'firstName lastName companyName'
+      })
+      .populate({
+        path: 'jobId',
+        select: 'title category'
+      });
+
     if (!application) {
       return next(new ErrorHandler("Application not found!", 404));
     }
 
     // Ensure only the job poster can update the application status
-    if (application.employerID.user.toString() !== req.user._id.toString()) {
+    if (application.employerID.user._id.toString() !== req.user._id.toString()) {
       return next(new ErrorHandler("You are not authorized to update this application!", 403));
     }
 
     application.status = status;
     await application.save();
+
+    // Send email notification
+    const applicantEmail = application.email; // Email is stored directly in application
+    const applicantName = application.name; // Name is stored directly in application
+    const jobTitle = application.jobId.title;
+    const companyName = application.employerID.user.companyName || `${application.employerID.user.firstName} ${application.employerID.user.lastName}`;
+
+    console.log('Sending email to:', applicantEmail, 'Status:', status);
+    await ApplicationStatus(applicantEmail, applicantName, jobTitle, companyName, status);
 
     res.status(200).json({
       success: true,
@@ -211,3 +235,5 @@ export const updateApplicationStatus = catchAsyncErrors(
     });
   }
 );
+
+
