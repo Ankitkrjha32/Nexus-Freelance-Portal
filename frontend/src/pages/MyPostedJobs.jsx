@@ -4,7 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { getMyJobs, deleteJob, getProfessorApplications, toggleJobStatus } from "../services/operations/jobAPI";
 import ViewApplicationsModal from "../components/common/ViewApplicationsModal";
 import { IoSearch } from "react-icons/io5";
-import { FaEye, FaTrash, FaEdit, FaMapMarkerAlt, FaMoneyBillWave, FaCalendarAlt, FaTags, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import {
+    FaEye,
+    FaTrash,
+    FaEdit,
+    FaMapMarkerAlt,
+    FaMoneyBillWave,
+    FaCalendarAlt,
+    FaTags,
+    FaToggleOn,
+    FaToggleOff,
+    FaArrowLeft,
+    FaArrowRight,
+} from "react-icons/fa";
 import useOutsideClick from "../hooks/useOutsideClick";
 import { IoIosArrowUp, IoIosArrowDown, IoIosCheckmark } from "react-icons/io";
 
@@ -20,9 +32,12 @@ const MyJobs = () => {
     const [selectedJob, setSelectedJob] = useState(null);
     const [applications, setApplications] = useState([]);
     const [loadingApplications, setLoadingApplications] = useState(false);
+    const [page, setPage] = useState(1);
     const dropdownRef = useRef(null);
 
     useOutsideClick(dropdownRef, () => setIsOpen(false));
+    const itemsPerPage = 10;
+    const startIndex = (page - 1) * itemsPerPage;
 
     useEffect(() => {
         const fetchJobs = async () => {
@@ -34,6 +49,19 @@ const MyJobs = () => {
         fetchJobs();
     }, [dispatch]);
 
+    const totalPages = Math.ceil(jobs.length / itemsPerPage);
+    const goNext = () => {
+        if (page < totalPages) setPage(page + 1);
+    };
+
+    const goPrev = () => {
+        if (page > 1) setPage(page - 1);
+    };
+
+    useEffect(() => {
+        setPage(1);
+    }, [statusFilter, searchTerm, jobs]);
+
     const handleSelect = (option) => {
         setStatusFilter(option);
         setIsOpen(false);
@@ -43,7 +71,7 @@ const MyJobs = () => {
         if (window.confirm("Are you sure you want to delete this job posting?")) {
             const result = await dispatch(deleteJob(jobId));
             if (result) {
-                setJobs(jobs.filter(job => job._id !== jobId));
+                setJobs(jobs.filter((job) => job._id !== jobId));
             }
         }
     };
@@ -52,11 +80,11 @@ const MyJobs = () => {
         setSelectedJob(job);
         setLoadingApplications(true);
         setIsModalOpen(true);
-        
+
         const result = await dispatch(getProfessorApplications());
-        
+
         // Filter applications for the selected job
-        const jobApplications = result.filter(app => app.jobId?._id === job._id);
+        const jobApplications = result.filter((app) => app.jobId?._id === job._id);
         setApplications(jobApplications);
         setLoadingApplications(false);
     };
@@ -66,7 +94,7 @@ const MyJobs = () => {
         if (selectedJob) {
             setLoadingApplications(true);
             const result = await dispatch(getProfessorApplications());
-            const jobApplications = result.filter(app => app.jobId?._id === selectedJob._id);
+            const jobApplications = result.filter((app) => app.jobId?._id === selectedJob._id);
             setApplications(jobApplications);
             setLoadingApplications(false);
         }
@@ -74,17 +102,15 @@ const MyJobs = () => {
 
     const handleToggleJobStatus = async (jobId, currentStatus) => {
         const newStatus = !currentStatus;
-        const confirmMessage = newStatus 
+        const confirmMessage = newStatus
             ? "Are you sure you want to close this job? Students won't be able to apply anymore."
             : "Are you sure you want to reopen this job? Students will be able to apply again.";
-        
+
         if (window.confirm(confirmMessage)) {
             const result = await dispatch(toggleJobStatus(jobId, newStatus));
             if (result) {
                 // Update the job in the local state
-                setJobs(jobs.map(job => 
-                    job._id === jobId ? { ...job, expired: newStatus } : job
-                ));
+                setJobs(jobs.map((job) => (job._id === jobId ? { ...job, expired: newStatus } : job)));
             }
         }
     };
@@ -98,12 +124,13 @@ const MyJobs = () => {
     const options = ["All Status", "Active", "Expired"];
 
     // Filter jobs based on search and status
-    const filteredJobs = jobs.filter((job) => {
+    const filteredJob = jobs.filter((job) => {
         const jobStatus = job.expired ? "Expired" : "Active";
         const matchesStatus = statusFilter === "All Status" || jobStatus === statusFilter;
         const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesStatus && matchesSearch;
     });
+    const filteredJobs = filteredJob.slice(startIndex, startIndex + itemsPerPage);
 
     // Format salary
     const formatSalary = (job) => {
@@ -139,7 +166,7 @@ const MyJobs = () => {
     return (
         <div className="min-h-screen bg-[#f9fafc] flex flex-col items-center py-10 px-6 mt-14 w-full">
             {/* Header */}
-            <div className="w-full max-w-6xl mb-8">
+            <div className="w-[90%] mb-8">
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-4xl font-bold text-[#0b1957] mb-2">My Posted Jobs</h1>
@@ -155,27 +182,23 @@ const MyJobs = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-6xl mb-6">
+            <div className="grid grid-cols-3 gap-4 w-[90%]  mb-6">
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Total Jobs Posted</p>
                     <p className="text-2xl font-bold text-blue-600">{jobs.length}</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Active Jobs</p>
-                    <p className="text-2xl font-bold text-green-600">
-                        {jobs.filter(job => !job.expired).length}
-                    </p>
+                    <p className="text-2xl font-bold text-green-600">{jobs.filter((job) => !job.expired).length}</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Expired Jobs</p>
-                    <p className="text-2xl font-bold text-red-600">
-                        {jobs.filter(job => job.expired).length}
-                    </p>
+                    <p className="text-2xl font-bold text-red-600">{jobs.filter((job) => job.expired).length}</p>
                 </div>
             </div>
 
             {/* Search + Filter */}
-            <div className="flex w-full max-w-6xl items-center gap-4 mb-6 relative">
+            <div className="flex w-[90%] items-center gap-4 mb-6 relative">
                 <div className="relative w-full">
                     <IoSearch className="absolute left-4 top-3.5 text-gray-400" />
                     <input
@@ -188,8 +211,8 @@ const MyJobs = () => {
                 </div>
 
                 <div className="w-[40%] relative" ref={dropdownRef}>
-                    <div 
-                        className="w-full border border-gray-200 p-2 relative text-center rounded-lg cursor-pointer hover:bg-gray-50 transition" 
+                    <div
+                        className="w-full border border-gray-200 p-2 relative text-center rounded-lg cursor-pointer hover:bg-gray-50 transition"
                         onClick={() => setIsOpen(!isOpen)}
                     >
                         {statusFilter}
@@ -223,30 +246,15 @@ const MyJobs = () => {
             </div>
 
             {/* Job Cards */}
-            <div className="flex flex-col w-full max-w-6xl gap-5">
+            <div className="flex flex-col w-[90%] gap-5">
                 {filteredJobs.map((job) => (
                     <div
                         key={job._id}
                         className="w-full bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300"
                     >
                         <div className="flex justify-between items-start">
-                            <div className="flex-1">
-                                <div className="flex items-start justify-between mb-3">
-                                    <h2 className="text-2xl font-semibold text-[#0b1957] flex-1">
-                                        {job.title}
-                                    </h2>
-
-                                    
-                                    <span
-                                        className={`text-sm font-semibold px-4 py-2 rounded-full ml-4 ${
-                                            job.expired
-                                                ? "bg-red-100 text-red-700"
-                                                : "bg-green-100 text-green-700"
-                                        }`}
-                                    >
-                                        {job.expired ? "Expired" : "Active"}
-                                    </span>
-                                </div>
+                            <div className="flex flex-col gap-3 w-[85%]">
+                                <h2 className="text-2xl font-semibold text-[#0b1957] flex-1 mb-3">{job.title}</h2>
 
                                 <p className="text-gray-600 mb-4 line-clamp-2">{job.description}</p>
 
@@ -260,7 +268,9 @@ const MyJobs = () => {
                                     <div className="flex gap-3 items-center text-gray-600">
                                         <FaMapMarkerAlt className="text-blue-600" />
                                         <span className="font-medium">Location:</span>
-                                        <span>{job.city}, {job.country}</span>
+                                        <span>
+                                            {job.city}, {job.country}
+                                        </span>
                                     </div>
 
                                     <div className="flex gap-3 items-center text-gray-600">
@@ -283,53 +293,71 @@ const MyJobs = () => {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-2 ml-4">
-                                <button 
-                                    onClick={() => handleViewApplications(job)}
-                                    className="flex items-center gap-2 border border-blue-500 text-blue-600 rounded-lg px-4 py-2 text-sm hover:bg-blue-50 transition whitespace-nowrap"
-                                >
-                                    <FaEye /> View Applications
-                                </button>
-                                <button 
-                                    onClick={() => handleToggleJobStatus(job._id, job.expired)}
-                                    className={`flex items-center gap-2 border rounded-lg px-4 py-2 text-sm hover:bg-opacity-20 transition whitespace-nowrap ${
-                                        job.expired 
-                                            ? "border-green-500 text-green-600 hover:bg-green-50" 
-                                            : "border-orange-500 text-orange-600 hover:bg-orange-50"
+                            <div className="flex flex-col gap-6 ml-4 items-end">
+                                <span
+                                    className={`text-sm mb- font-semibold px-4 py-2 w-fit rounded-full flex justify-center ${
+                                        job.expired ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
                                     }`}
                                 >
-                                    {job.expired ? (
-                                        <>
-                                            <FaToggleOff /> Reopen Job
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FaToggleOn /> Close Job
-                                        </>
-                                    )}
-                                </button>
-                                <button 
-                                    className="flex items-center gap-2 border border-green-500 text-green-600 rounded-lg px-4 py-2 text-sm hover:bg-green-50 transition whitespace-nowrap"
-                                >
-                                    <FaEdit /> Edit Job
-                                </button>
-                                <button 
-                                    onClick={() => handleDelete(job._id)}
-                                    className="flex items-center gap-2 border border-red-500 text-red-600 rounded-lg px-4 py-2 text-sm hover:bg-red-50 transition whitespace-nowrap"
-                                >
-                                    <FaTrash /> Delete
-                                </button>
+                                    {job.expired ? "Expired" : "Active"}
+                                </span>
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        onClick={() => handleViewApplications(job)}
+                                        className="flex items-center gap-2 border border-blue-500 text-blue-600 rounded-lg px-4 py-2 text-sm hover:bg-blue-50 transition whitespace-nowrap w-full"
+                                    >
+                                        <FaEye /> View Applications
+                                    </button>
+                                    <button
+                                        onClick={() => handleToggleJobStatus(job._id, job.expired)}
+                                        className={`flex items-center justify-center gap-2 border rounded-lg px-4 py-2 text-sm hover:bg-opacity-20 transition whitespace-nowrap w-full ${
+                                            job.expired
+                                                ? "border-green-500 text-green-600 hover:bg-green-50"
+                                                : "border-orange-500 text-orange-600 hover:bg-orange-50"
+                                        }`}
+                                    >
+                                        {job.expired ? (
+                                            <>
+                                                <FaToggleOff /> Reopen Job
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FaToggleOn /> Close Job
+                                            </>
+                                        )}
+                                    </button>
+                                    <button className="flex items-center justify-center w-full gap-2 border border-green-500 text-green-600 rounded-lg px-4 py-2 text-sm hover:bg-green-50 transition whitespace-nowrap">
+                                        <FaEdit /> Edit Job
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(job._id)}
+                                        className="flex items-center justify-center w-full gap-2 border border-red-500 text-red-600 rounded-lg px-4 py-2 text-sm hover:bg-red-50 transition whitespace-nowrap"
+                                    >
+                                        <FaTrash /> Delete
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 ))}
+
+                {filteredJobs.length !== 0 && (
+                    <div className="flex justify-center gap-10 mt-10">
+                        <div className="p-4 rounded-full bg-blue-25" onClick={goPrev}>
+                            <FaArrowLeft className="" />
+                        </div>
+                        <div className="p-4 rounded-full bg-blue-25" onClick={goNext}>
+                            <FaArrowRight className="" />
+                        </div>
+                    </div>
+                )}
 
                 {filteredJobs.length === 0 && (
                     <div className="text-center py-16">
                         <FaTags className="text-6xl text-gray-300 mx-auto mb-4" />
                         <p className="text-gray-500 text-lg">No jobs found.</p>
                         <p className="text-gray-400 text-sm mt-2">
-                            {jobs.length === 0 
+                            {jobs.length === 0
                                 ? "You haven't posted any jobs yet. Click 'Post New Job' to get started!"
                                 : "Try adjusting your filters or search term."}
                         </p>

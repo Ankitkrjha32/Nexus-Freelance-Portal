@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getStudentApplications, deleteApplication } from "../services/operations/jobAPI";
 import { IoSearch } from "react-icons/io5";
-import { FaEye, FaTrash, FaFileDownload } from "react-icons/fa";
+import { FaEye, FaTrash, FaFileDownload, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { FaCalendarAlt, FaBuilding, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import useOutsideClick from "../hooks/useOutsideClick";
 import { IoIosArrowUp, IoIosArrowDown, IoIosCheckmark } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const MyApplications = () => {
     const dispatch = useDispatch();
@@ -14,9 +15,12 @@ const MyApplications = () => {
     const [statusFilter, setStatusFilter] = useState("All Status");
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
+    const [page, setPage] = useState(1);
     const dropdownRef = useRef(null);
 
     useOutsideClick(dropdownRef, () => setIsOpen(false));
+    const itemsPerPage = 10;
+    const startIndex = (page - 1) * itemsPerPage;
 
     useEffect(() => {
         const fetchApplications = async () => {
@@ -27,6 +31,14 @@ const MyApplications = () => {
         };
         fetchApplications();
     }, [dispatch]);
+    const totalPages = Math.ceil(applications.length / itemsPerPage);
+    const goNext = () => {
+        if (page < totalPages) setPage(page + 1);
+    };
+
+    const goPrev = () => {
+        if (page > 1) setPage(page - 1);
+    };
 
     const handleSelect = (option) => {
         setStatusFilter(option);
@@ -37,7 +49,7 @@ const MyApplications = () => {
         if (window.confirm("Are you sure you want to delete this application?")) {
             const result = await dispatch(deleteApplication(applicationId));
             if (result) {
-                setApplications(applications.filter(app => app._id !== applicationId));
+                setApplications(applications.filter((app) => app._id !== applicationId));
             }
         }
     };
@@ -45,11 +57,16 @@ const MyApplications = () => {
     const options = ["All Status", "Pending", "Accepted", "Rejected"];
 
     // Filter applications based on search and status
-    const filteredApplications = applications.filter((app) => {
+    const filteredApplication = applications.filter((app) => {
         const matchesStatus = statusFilter === "All Status" || app.status === statusFilter;
         const matchesSearch = app.jobId?.title?.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesStatus && matchesSearch;
     });
+    const filteredApplications = filteredApplication.slice(startIndex, startIndex + itemsPerPage);
+
+    useEffect(() => {
+        setPage(1);
+    }, [statusFilter, searchTerm]);
 
     if (loading) {
         return (
@@ -65,39 +82,33 @@ const MyApplications = () => {
     return (
         <div className="min-h-screen bg-[#f9fafc] flex flex-col items-center py-10 px-6 mt-14 w-full">
             {/* Header */}
-            <div className="w-full max-w-6xl mb-8">
+            <div className="w-[90%] mb-8">
                 <h1 className="text-4xl font-bold text-[#0b1957] mb-2">My Applications</h1>
                 <p className="text-gray-600">Track and manage your job applications</p>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full max-w-6xl mb-6">
+            <div className="grid grid-cols-4 w-[90%] gap-10 mb-8">
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Total Applications</p>
                     <p className="text-2xl font-bold text-blue-600">{applications.length}</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Pending</p>
-                    <p className="text-2xl font-bold text-yellow-600">
-                        {applications.filter(app => app.status === "Pending").length}
-                    </p>
+                    <p className="text-2xl font-bold text-yellow-600">{applications.filter((app) => app.status === "Pending").length}</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Accepted</p>
-                    <p className="text-2xl font-bold text-green-600">
-                        {applications.filter(app => app.status === "Accepted").length}
-                    </p>
+                    <p className="text-2xl font-bold text-green-600">{applications.filter((app) => app.status === "Accepted").length}</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Rejected</p>
-                    <p className="text-2xl font-bold text-red-600">
-                        {applications.filter(app => app.status === "Rejected").length}
-                    </p>
+                    <p className="text-2xl font-bold text-red-600">{applications.filter((app) => app.status === "Rejected").length}</p>
                 </div>
             </div>
 
             {/* Search + Filter */}
-            <div className="flex w-full max-w-6xl items-center gap-4 mb-6 relative">
+            <div className="flex w-[90%] items-center gap-4 mb-6 relative">
                 <div className="relative w-full">
                     <IoSearch className="absolute left-4 top-3.5 text-gray-400" />
                     <input
@@ -110,8 +121,8 @@ const MyApplications = () => {
                 </div>
 
                 <div className="w-[40%] relative" ref={dropdownRef}>
-                    <div 
-                        className="w-full border border-gray-200 p-2 relative text-center rounded-lg cursor-pointer hover:bg-gray-50 transition" 
+                    <div
+                        className="w-full border border-gray-200 p-2 relative text-center rounded-lg cursor-pointer hover:bg-gray-50 transition"
                         onClick={() => setIsOpen(!isOpen)}
                     >
                         {statusFilter}
@@ -145,7 +156,7 @@ const MyApplications = () => {
             </div>
 
             {/* Application Cards */}
-            <div className="flex flex-col w-full max-w-6xl gap-5">
+            <div className="flex flex-col w-[90%] gap-5">
                 {filteredApplications.map((application) => (
                     <div
                         key={application._id}
@@ -156,26 +167,28 @@ const MyApplications = () => {
                                 <h2 className="text-2xl font-semibold text-[#0b1957] mb-3">
                                     {application.jobId?.title || "Job Title Not Available"}
                                 </h2>
-                                
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                                     <div className="flex gap-3 items-center text-gray-600">
                                         <FaUser className="text-blue-600" />
                                         <span className="font-medium">Professor:</span>
-                                        <span>{application.employerID?.user?.firstName} {application.employerID?.user?.lastName}</span>
+                                        <span>
+                                            {application.employerID?.user?.firstName} {application.employerID?.user?.lastName}
+                                        </span>
                                     </div>
-                                    
+
                                     <div className="flex gap-3 items-center text-gray-600">
                                         <FaBuilding className="text-blue-600" />
                                         <span className="font-medium">Category:</span>
                                         <span>{application.jobId?.category || "N/A"}</span>
                                     </div>
-                                    
+
                                     <div className="flex gap-3 items-center text-gray-600">
                                         <FaMapMarkerAlt className="text-blue-600" />
                                         <span className="font-medium">Location:</span>
                                         <span>{application.jobId?.location || "N/A"}</span>
                                     </div>
-                                    
+
                                     <div className="flex gap-3 items-center text-gray-600">
                                         <FaCalendarAlt className="text-blue-600" />
                                         <span className="font-medium">Applied:</span>
@@ -196,7 +209,7 @@ const MyApplications = () => {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-end gap-4 ml-4">
+                            <div className="flex flex-col items-end gap-32 ml-4 w-[30%]">
                                 <span
                                     className={`text-sm font-semibold px-4 py-2 rounded-full ${
                                         application.status === "Pending"
@@ -208,29 +221,29 @@ const MyApplications = () => {
                                 >
                                     {application.status}
                                 </span>
-                                
-                                <div className="flex flex-col gap-2">
+
+                                <div className="flex gap-2 w-full justify-center">
                                     {application.resume?.url ? (
                                         <a
                                             href={application.resume.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center gap-2 border border-blue-500 text-blue-600 rounded-lg px-4 py-2 text-sm hover:bg-blue-50 transition"
+                                            className="flex items-center gap-2 border border-blue-500 text-blue-600 rounded-lg px-5 justify-center py-3 w-[45%] text-sm hover:bg-blue-50 transition"
                                         >
                                             <FaFileDownload /> View Resume
                                         </a>
                                     ) : (
                                         <button
                                             disabled
-                                            className="flex items-center gap-2 border border-gray-400 text-gray-400 rounded-lg px-4 py-2 text-sm cursor-not-allowed"
+                                            className="flex items-center gap-2 border border-gray-400 text-gray-400 rounded-lg px-5 justify-center py-3 w-[45%] text-sm cursor-not-allowed"
                                         >
                                             <FaFileDownload /> No Resume
                                         </button>
                                     )}
-                                    
-                                    <button 
+
+                                    <button
                                         onClick={() => handleDelete(application._id)}
-                                        className="flex items-center gap-2 border border-red-500 text-red-600 rounded-lg px-4 py-2 text-sm hover:bg-red-50 transition"
+                                        className="flex items-center gap-2 border border-red-500 text-red-600 rounded-lg px-5 justify-center py-3 w-[45%] text-sm hover:bg-red-50 transition"
                                     >
                                         <FaTrash /> Delete
                                     </button>
@@ -239,6 +252,17 @@ const MyApplications = () => {
                         </div>
                     </div>
                 ))}
+
+                {filteredApplications.length !== 0 && (
+                    <div className="flex justify-center gap-10 mt-10">
+                        <div className="p-4 rounded-full bg-blue-25" onClick={goPrev}>
+                            <FaArrowLeft className="" />
+                        </div>
+                        <div className="p-4 rounded-full bg-blue-25" onClick={goNext}>
+                            <FaArrowRight className="" />
+                        </div>
+                    </div>
+                )}
 
                 {filteredApplications.length === 0 && (
                     <div className="text-center py-16">
