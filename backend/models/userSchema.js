@@ -39,6 +39,7 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please select a branch"],
     enum:["cse","me","ece"],
   },
+  
   role: {
     type: String,
     required: [true, "Please select a role"],
