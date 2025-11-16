@@ -29,23 +29,23 @@ const LoginForm = () => {
     }
     return (
         <form onSubmit={submitHandler} className=" w-[70%] mb-7">
-            <div className="bg-amber-300 rounded-2xl w-fit flex flex-row justify-between p-1 mb-7">
+            <div className="bg-[#87CEEB] rounded-2xl w-fit flex flex-row justify-between p-1 mb-7">
                 <button
-                    className={`py-2 px-6 rounded-2xl ${accountType === "Student" ? "bg-amber-400" : "bg-amber-300"}`}
+                    className={`py-2 px-6 rounded-2xl ${accountType === "Student" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
                     onClick={() => setAccountType("Student")}
                     type="button"
                 >
                     Student
                 </button>
                 <button
-                    className={`py-2 px-6 rounded-2xl ${accountType === "Professor" ? "bg-amber-400" : "bg-amber-300"}`}
+                    className={`py-2 px-6 rounded-2xl ${accountType === "Professor" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
                     onClick={() => setAccountType("Professor")}
                     type="button"
                 >
                     Professor
                 </button>
                 <button
-                    className={`py-2 px-6 rounded-2xl ${accountType === "Admin" ? "bg-amber-400" : "bg-amber-300"}`}
+                    className={`py-2 px-6 rounded-2xl ${accountType === "Admin" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
                     onClick={() => setAccountType("Admin")}
                     type="button"
                 >
@@ -95,7 +95,7 @@ const LoginForm = () => {
                 <p className="text-end text-blue-200">Forgot Password?</p>
             </label>
 
-            <button type="submit" className="w-full bg-green-500 rounded-[7px] p-3 text-black">
+            <button type="submit" className="w-full bg-[#1E90FF] rounded-[7px] p-3 text-black">
                 Sign In
             </button>
         </form>

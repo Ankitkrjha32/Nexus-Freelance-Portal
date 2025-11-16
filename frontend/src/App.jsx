@@ -16,6 +16,9 @@ import MyPostedJobs from "./pages/MyPostedJobs";
 import MyApplications from "./pages/MyApplications";
 import AllJobs from "./pages/AllJobs";
 import PostJob from "./pages/PostJob";
+import AllCategories from "./pages/AllCategories";
+import OpenRoute from "./components/core/auth/OpenRoute";
+import PrivateRoute from "./components/core/auth/PrivateRoute";
 
 function App() {
     const dispatch = useDispatch();
@@ -26,17 +29,102 @@ function App() {
             <ScrollToTop />
             <Navbar />
             <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/Login" element={<Login />} />
-                <Route path="/Signup" element={<Signup />} />
-                <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/about" element={<AboutUs />} />
-                <Route path="/category/:categoryName" element={<Category />} />
-                <Route path="/my-posted-jobs" element={<MyPostedJobs />} />
-                <Route path="/my-applications" element={<MyApplications />} />
-                <Route path="/dashboard/my-profile" element={<MyProfile />} />
-                <Route path="/job" element={<AllJobs />} />
-                <Route path ="/post-job" element={<PostJob />} />
+                <Route
+                    path="/"
+                    element={
+                        <OpenRoute>
+                            <Home />
+                        </OpenRoute>
+                    }
+                />
+                <Route
+                    path="/Login"
+                    element={
+                        <OpenRoute restricted={true}>
+                            <Login />
+                        </OpenRoute>
+                    }
+                />
+                <Route
+                    path="/Signup"
+                    element={
+                        <OpenRoute restricted={true}>
+                            <Signup />
+                        </OpenRoute>
+                    }
+                />
+                <Route
+                    path="/how-it-works"
+                    element={
+                        <OpenRoute>
+                            <HowItWorks />
+                        </OpenRoute>
+                    }
+                />
+                <Route
+                    path="/about"
+                    element={
+                        <OpenRoute>
+                            <AboutUs />
+                        </OpenRoute>
+                    }
+                />
+                <Route
+                    path="/category/:categoryName"
+                    element={
+                        <OpenRoute>
+                            <Category />
+                        </OpenRoute>
+                    }
+                />
+                <Route
+                    path="/categories"
+                    element={
+                        <OpenRoute>
+                            <AllCategories />
+                        </OpenRoute>
+                    }
+                />
+                <Route
+                    path="/my-posted-jobs"
+                    element={
+                        <PrivateRoute>
+                            <MyPostedJobs />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/my-applications"
+                    element={
+                        <PrivateRoute>
+                            <MyApplications />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/dashboard/my-profile"
+                    element={
+                        <PrivateRoute>
+                            <MyProfile />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/job"
+                    element={
+                        <OpenRoute>
+                            <AllJobs />
+                        </OpenRoute>
+                    }
+                />
+                <Route
+                    path="/post-job"
+                    element={
+                        <PrivateRoute>
+                            <PostJob />
+                        </PrivateRoute>
+                    }
+                />
             </Routes>
             <Footer />
         </div>
