@@ -465,14 +465,14 @@ export const Job_Posted_Confirmation_Email_Template = `
   </head>
   <body>
       <div class="container">
-          <div class="header">✅ Job Posted Successfully!</div>
+          <div class="header">Job Posted Successfully!</div>
           <div class="content">
-              <div class="success-icon">🎯</div>
+              <div class="success-icon"></div>
               <p>Dear <strong>{posterName}</strong>,</p>
               <p>Thank you for posting a job on our platform! Your job listing is now live and visible to candidates.</p>
               
               <div class="job-summary">
-                  <h3 style="margin-top: 0; text-align: center;">📝 Job Summary</h3>
+                  <h3 style="margin-top: 0; text-align: center;">Job Summary</h3>
                   <div class="summary-item">
                       <span class="label">Job Title:</span>
                       <span class="value">{jobTitle}</span>
@@ -496,11 +496,11 @@ export const Job_Posted_Confirmation_Email_Template = `
               </div>
 
               <div style="text-align: center;">
-                  <a href="{jobViewLink}" class="action-button">👀 View Your Job Posting</a>
+                  <a href="{jobViewLink}" class="action-button"> View Your Job Posting</a>
               </div>
 
               <div class="info-box">
-                  <p style="margin: 0 0 10px 0;"><strong>📊 What's Next?</strong></p>
+                  <p style="margin: 0 0 10px 0;"><strong> What's Next?</strong></p>
                   <ul style="margin: 0; padding-left: 20px;">
                       <li>Your job is now visible to all active job seekers</li>
                       <li>You'll receive notifications when candidates apply</li>
@@ -509,27 +509,14 @@ export const Job_Posted_Confirmation_Email_Template = `
                   </ul>
               </div>
 
-              <div class="stats-container">
-                  <div class="stat-box">
-                      <div class="stat-number">∞</div>
-                      <div class="stat-label">Potential Reach</div>
-                  </div>
-                  <div class="stat-box">
-                      <div class="stat-number">24/7</div>
-                      <div class="stat-label">Visibility</div>
-                  </div>
-                  <div class="stat-box">
-                      <div class="stat-number">🚀</div>
-                      <div class="stat-label">Live Now</div>
-                  </div>
-              </div>
+             
 
               <p>We'll keep you updated on the progress of your job posting. Good luck finding the perfect candidate!</p>
               <p style="margin-top: 20px;">Best regards,<br><strong>Job Portal Team</strong></p>
           </div>
           <div class="footer">
               <p>&copy; ${new Date().getFullYear()} Job Portal Platform. All rights reserved.</p>
-              <p>Need help? Contact us at support@jobportal.com</p>
+              <p>Need help? Contact us at team nexus , Ankit Kumar jha </p>
           </div>
       </div>
   </body>

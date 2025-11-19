@@ -2,6 +2,8 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncError.js";
 import { Job } from "../models/jobSchema.js";
 import ErrorHandler from "../middlewares/error.js";
 import cloudinary from "cloudinary";
+import { NotifyAll } from "../nodemailer/Email.js";
+import { fetchAllUsers } from "./adminController.js";
 
 export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
   const jobs = await Job.find({});
@@ -103,6 +105,9 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
   }
 
   const postedBy = req.user._id;
+  const posterEmail = req.user.email;
+  const posterName = `${req.user.firstName} ${req.user.lastName}`;
+  
   const job = await Job.create({
     title,
     description,
@@ -116,7 +121,39 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
     postedBy,
     jobDocument: Object.keys(jobDocument).length > 0 ? jobDocument : undefined,
   });
-  
+
+  // Fetch all users and send bulk notification
+  try {
+    const allUsers = await fetchAllUsers();
+    const onlystudents = allUsers.filter(user => user.role === "Student");
+    console.log(`Fetched ${allUsers.length} users for notification`);
+    
+    const postedDate = new Date(job.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    await NotifyAll(
+      posterEmail,
+      posterName,
+      job.title,
+      job.description,
+      job.salaryFrom ? `₹${job.salaryFrom} - ₹${job.salaryTo}` : `₹${job.fixedSalary}`,
+      job.location,
+      job.city,
+      job.jobDocument,
+      
+      job.category,
+      `${job.city}, ${job.country}`,
+      postedDate,
+      onlystudents
+    );
+  } catch (emailError) {
+    console.log('Email notification error:', emailError);
+    // Don't fail the job posting if email fails
+  }
+
   res.status(200).json({
     success: true,
     message: "Job Posted Successfully!",

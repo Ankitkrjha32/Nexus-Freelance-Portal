@@ -6,6 +6,7 @@ import {
     Interview_Invitation_Email_Template,
     Job_Posted_Confirmation_Email_Template
 } from "./EmailTemplate.js";
+import { Job_Alert_Email_Template } from "./JobAlertTemplate.js";
 
 
 export const sendVerificationEamil=async(email,verificationCode)=>{
@@ -125,3 +126,71 @@ export const sendJobPostedConfirmation = async(email, posterName, jobTitle, cate
         console.log('Job Posted Confirmation Email error', error);
     }
 }
+
+
+
+export const NotifyAll = async(
+    posterEmail, 
+    posterName, 
+    jobTitle, 
+    jobDescription, 
+    salary, 
+    location, 
+    city, 
+    jobDocument, 
+    category, 
+    fullLocation, 
+    postedDate, 
+    onlyStudents
+) => {
+    try {
+        // Extract all student emails except the job poster
+        const recipientEmails = onlyStudents
+            .filter(user => user.email !== posterEmail)
+            .map(user => user.email)
+            .join(',');
+
+        if (!recipientEmails) {
+            console.log('No recipients to notify');
+            return;
+        }
+
+        // Create job document section if document exists
+        let jobDocumentSection = '';
+        if (jobDocument && jobDocument.url) {
+            jobDocumentSection = `
+                <div style="text-align: center; margin: 20px 0;">
+                    <a href="${jobDocument.url}" class="document-link" target="_blank">
+                        📄 View Job Document
+                    </a>
+                </div>
+            `;
+        }
+
+        const htmlContent = Job_Alert_Email_Template
+            .replace("{jobTitle}", jobTitle)
+            .replace("{salary}", salary)
+            .replace("{category}", category)
+            .replace("{location}", fullLocation)
+            .replace("{city}", city)
+            .replace("{postedDate}", postedDate)
+            .replace("{posterName}", posterName)
+            .replace("{description}", jobDescription.substring(0, 300) + (jobDescription.length > 300 ? '...' : ''))
+            .replace("{jobDocumentSection}", jobDocumentSection)
+            .replace("{applyLink}", "http://localhost:5173/jobs"); // Update with your actual frontend URL
+
+        const response = await transporter.sendMail({
+            from: '"Nexus Portal DSEU 🎓" <thedarkcollege@gmail.com>',
+            bcc: recipientEmails, // Use BCC for bulk emails
+            subject: `🚀 New Job Alert: ${jobTitle} | Apply Now!`,
+            text: `New Job Posted: ${jobTitle} by ${posterName}. Salary: ${salary}. Location: ${fullLocation}. Apply now!`,
+            html: htmlContent
+        });
+        
+        console.log(`✅ Bulk Email sent Successfully to ${onlyStudents.length - 1} students`);
+        return response;
+    } catch (error) {
+        console.log('Bulk Email error', error);
+    }
+}
+

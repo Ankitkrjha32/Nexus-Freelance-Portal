@@ -4,10 +4,16 @@ import { User } from "../models/userSchema.js";
 import { Job } from "../models/jobSchema.js";
 import { Application } from "../models/applicationSchema.js";
 
+// Helper function to fetch all users (no response sent)
+export const fetchAllUsers = async () => {
+  const users = await User.find().select("email firstName lastName role");
+  return users;
+};
+
 // Get all users
 export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
-  if (role !== "Admin") {
+  if (role !== "Admin" && role !== "Professor") {
     return next(new ErrorHandler("Only Admin can access this resource.", 403));
   }
 
@@ -25,6 +31,8 @@ export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
     users,
     stats,
   });
+
+  return users;
 });
 
 // Get all jobs (admin view)
