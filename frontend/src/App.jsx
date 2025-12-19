@@ -20,7 +20,11 @@ import PostJob from "./pages/PostJob";
 import AllCategories from "./pages/AllCategories";
 import OpenRoute from "./components/core/auth/OpenRoute";
 import PrivateRoute from "./components/core/auth/PrivateRoute";
+<<<<<<< Updated upstream
 import useLenis from "./hooks/useLenis";
+=======
+import Message from "./pages/Message"
+>>>>>>> Stashed changes
 
 function App() {
     const dispatch = useDispatch();
@@ -127,6 +131,14 @@ function App() {
                             <PostJob />
                         </PrivateRoute>
                     }
+                />
+
+                <Route path="/messages"
+                element={
+                    <PrivateRoute>
+                        <Message/>
+                    </PrivateRoute>
+                }
                 />
             </Routes>
             <Footer />
