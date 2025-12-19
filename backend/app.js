@@ -14,11 +14,17 @@ const app = express();
 config({ path: "./config/config.env" });
 
 app.use(
-  cors({
-    origin: [ "*",process.env.FRONTEND_URI, "http://localhost:3000", "http://localhost:5173","192.168.0.101","192.168.0.105"],
-    methods: ["GET", "POST", "DELETE", "PUT"],
-    credentials: true,
-  })
+    cors({
+        origin: [
+            process.env.FRONTEND_URI,
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://192.168.0.101:3000",
+            "http://192.168.0.105:3000",
+        ],
+        methods: ["GET", "POST", "DELETE", "PUT"],
+        credentials: true,
+    })
 );
 
 app.use(cookieParser());
@@ -26,10 +32,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
-  fileUpload({
-    useTempFiles: true,
-    tempFileDir: "/tmp/",
-  })
+    fileUpload({
+        useTempFiles: true,
+        tempFileDir: "/tmp/",
+    })
 );
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/job", jobRouter);

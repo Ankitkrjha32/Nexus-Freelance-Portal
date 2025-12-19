@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch } from "react-redux";
-
+import OtpInput from "react-otp-input";
+import { FaTimes } from "react-icons/fa";
 import { signUp, verifyEmail } from "../../../services/operations/authAPI";
 import { setSignupData } from "../../../slices/authSlice";
 import { toast } from "react-hot-toast";
@@ -15,6 +16,7 @@ const SignUpForm = () => {
     const [accountType, setAccountType] = useState("Student");
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [otp, setOtp] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -31,7 +33,11 @@ const SignUpForm = () => {
             [event.target.name]: event.target.value,
         }));
     }
-    
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedJob(null);
+    };
+
     async function submitHandler(event) {
         event.preventDefault();
         console.log("formdata is ", formData);
@@ -52,53 +58,30 @@ const SignUpForm = () => {
 
         // Call signup API
         const result = await dispatch(signUp(signupData, navigate));
-        
+
         // If OTP sent successfully, show OTP modal
         if (result) {
             setShowOtpModal(true);
         }
     }
-    
+
     function handleVerifyOtp() {
         if (!otp || otp.length !== 6) {
             toast.error("Please enter a valid 6-digit OTP");
             return;
         }
-        
+
         const signupData = {
             ...formData,
             accountType,
         };
-        
+
         dispatch(verifyEmail(otp, signupData, navigate));
         setShowOtpModal(false);
     }
     return (
         // <div></div>
-        <form onSubmit={submitHandler} className=" w-full mb-7">
-            <div className="bg-[#87CEEB] rounded-2xl w-fit flex flex-row justify-between p-1 mb-7">
-                <button
-                    className={`py-2 px-6  rounded-2xl ${accountType === "Student" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
-                    onClick={() => setAccountType("Student")}
-                    type="button"
-                >
-                    Student
-                </button>
-                <button
-                    className={`py-2 px-6  rounded-2xl ${accountType === "Professor" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
-                    onClick={() => setAccountType("Professor")}
-                    type="button"
-                >
-                    Professor
-                </button>
-                <button
-                    className={`py-2 px-6  rounded-2xl ${accountType === "Admin" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
-                    onClick={() => setAccountType("Admin")}
-                    type="button"
-                >
-                    Admin
-                </button>
-            </div>
+        <form onSubmit={submitHandler} className=" w-full mb-4">
             <div className="flex flex-row gap-3">
                 <label className="flex flex-col gap-3 mb-3 w-[50%]">
                     <div className="flex flex-row gap-1">
@@ -186,25 +169,55 @@ const SignUpForm = () => {
                     />
                 </label>
             </div>
-
-            <label className="flex flex-col gap-3 mb-3">
-                <div className="flex flex-row gap-1">
-                    <p>Branch</p>
-                    <div className="text-red-500">*</div>
-                </div>
-                <select
-                    required
-                    name="branch"
-                    value={formData.branch}
-                    id="branch"
-                    onChange={changeHandler}
-                    className="border-2 border-richblack-900 p-3 rounded-[7px] shadow-[0_1px_0_0_#ffffff]"
-                >
-                    <option value="cse">Computer Science Engineering (CSE)</option>
-                    <option value="me">Mechanical Engineering (ME)</option>
-                    <option value="ece">Electronics & Communication Engineering (ECE)</option>
-                </select>
-            </label>
+            <div className="flex flex-row gap-3 ">
+                <label className="flex flex-col gap-3 mb-3 w-[50%]">
+                    <div className="flex flex-row gap-1">
+                        <p>Branch</p>
+                        <div className="text-red-500">*</div>
+                    </div>
+                    <select
+                        required
+                        name="branch"
+                        value={formData.branch}
+                        id="branch"
+                        onChange={changeHandler}
+                        className="border-2 border-richblack-900 p-3 rounded-[7px] shadow-[0_1px_0_0_#ffffff]"
+                    >
+                        <option value="cse">Computer Science Engineering (CSE)</option>
+                        <option value="me">Mechanical Engineering (ME)</option>
+                        <option value="ece">Electronics & Communication Engineering (ECE)</option>
+                    </select>
+                </label>
+                <label className="flex flex-col gap-3 mb-3 w-[50%]">
+                    <div className="flex flex-row gap-1">
+                        <p>Role</p>
+                        <div className="text-red-500">*</div>
+                    </div>
+                    <div className="bg-[#87CEEB] rounded-2xl w-full flex flex-row justify-between p-1 mb-7">
+                        <button
+                            className={`py-2 px-6  rounded-2xl ${accountType === "Student" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
+                            onClick={() => setAccountType("Student")}
+                            type="button"
+                        >
+                            Student
+                        </button>
+                        <button
+                            className={`py-2 px-6  rounded-2xl ${accountType === "Professor" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
+                            onClick={() => setAccountType("Professor")}
+                            type="button"
+                        >
+                            Professor
+                        </button>
+                        <button
+                            className={`py-2 px-6  rounded-2xl ${accountType === "Admin" ? "bg-[#00BFFF]" : "bg-[#87CEEB]"}`}
+                            onClick={() => setAccountType("Admin")}
+                            type="button"
+                        >
+                            Admin
+                        </button>
+                    </div>
+                </label>
+            </div>
 
             <div className="flex flex-row gap-3">
                 <label className="flex flex-col gap-3 mb-3 w-[50%]">
@@ -260,13 +273,18 @@ const SignUpForm = () => {
             <button type="submit" className="w-full bg-[#1E90FF] rounded-[7px] p-3 text-black mt-5">
                 Create Account
             </button>
-            
+
             {/* OTP Modal */}
             {showOtpModal && (
-                <div className="fixed inset-0 bg-pure-greys-100 bg-opacity-20 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-                        <h2 className="text-2xl font-bold mb-4 text-gray-800">Verify Your Email</h2>
-                        <p className="text-gray-600 mb-6">
+                <div className="fixed inset-0  flex items-center justify-center z-50">
+                    <div className="absolute inset-0 bg-blue-900/20 backdrop-blur-sm"></div>
+                    <div className="relative bg-white rounded-lg shadow-xl max-w-lg max-h-[90vh] w-full p-6 z-50 animate-fadeIn overflow-y-auto">
+                        <button onClick={handleCloseModal} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                            <FaTimes size={20} />
+                        </button>
+
+                        <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">Verify Your Email</h2>
+                        <p className="text-gray-600 mb-6 text-center">
                             We've sent a 6-digit OTP to <strong>{formData.email}</strong>
                         </p>
                         <label className="flex flex-col gap-3 mb-6">
@@ -274,15 +292,28 @@ const SignUpForm = () => {
                                 <p className="font-semibold">Enter OTP</p>
                                 <div className="text-red-500">*</div>
                             </div>
-                            <input
-                                type="text"
-                                maxLength="6"
+
+                            <OtpInput
                                 value={otp}
-                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                                placeholder="Enter 6-digit OTP"
-                                className="border-2 border-gray-300 p-3 rounded-lg text-center text-2xl tracking-widest font-semibold"
+                                onChange={setOtp}
+                                numInputs={6}
+                                renderInput={(props) => (
+                                    <input
+                                        {...props}
+                                        placeholder="-"
+                                        style={{
+                                            boxShadow: "inset 0px -1px 0px rgba(255, 255, 255, 0.18)",
+                                        }}
+                                        className="w-2xl lg:w-[60px] border-0 bg-richblack-400 rounded-[0.5rem] text-richblack-5 aspect-square text-center focus:border-0 focus:outline-2 focus:outline-yellow-50"
+                                    />
+                                )}
+                                containerStyle={{
+                                    justifyContent: "space-between",
+                                    gap: "0 6px",
+                                }}
                             />
                         </label>
+
                         <div className="flex gap-3">
                             <button
                                 onClick={() => {

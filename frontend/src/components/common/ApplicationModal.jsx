@@ -69,138 +69,121 @@ const ApplicationModal = ({ isOpen, onClose, job }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-slate-200 bg-opacity-10 flex items-center justify-center  p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+            {/* Background Overlay */}
+            <div onClick={onClose} className="absolute inset-0 bg-blue-900/20 backdrop-blur-sm"></div>
+
+            {/* Modal */}
+            <div className="relative bg-white rounded-lg shadow-xl max-w-lg max-h-[90vh] w-full p-6 z-50 animate-fadeIn overflow-y-auto">
+                {/* Close Button (X) */}
+                <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                    <FaTimes size={20} />
+                </button>
+
                 {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-[#2D68C4] to-[#87CEEB] text-white p-6 rounded-t-2xl">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <h2 className="text-2xl font-bold mb-2">Apply for Position</h2>
-                            <p className="text-blue-100">{job.title}</p>
-                        </div>
-                        <button onClick={onClose} className="text-white hover:bg-white/20 rounded-full p-2 transition">
-                            <FaTimes className="text-xl" />
-                        </button>
-                    </div>
-                </div>
+                <h2 className="text-xl font-semibold text-blue-700">Apply for Job</h2>
+                <p className="text-gray-700 mt-1 mb-4 font-medium">{job?.title}</p>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                    {/* Name */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Full Name */}
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">
-                            <FaUser className="inline mr-2 text-blue-600" />
-                            Full Name *
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                            placeholder="Enter your full name"
-                        />
+                        <label className="block text-sm font-medium mb-1">Full Name</label>
+                        <div className="flex items-center border rounded-md px-3 py-2">
+                            <FaUser className="text-gray-400 mr-2" />
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                className="w-full focus:outline-none"
+                                required
+                            />
+                        </div>
                     </div>
 
                     {/* Email */}
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">
-                            <FaEnvelope className="inline mr-2 text-blue-600" />
-                            Email Address *
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                            placeholder="your.email@example.com"
-                        />
+                        <label className="block text-sm font-medium mb-1">Email Address</label>
+                        <div className="flex items-center border rounded-md px-3 py-2">
+                            <FaEnvelope className="text-gray-400 mr-2" />
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className="w-full focus:outline-none"
+                                required
+                            />
+                        </div>
                     </div>
 
                     {/* Phone */}
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">
-                            <FaPhone className="inline mr-2 text-blue-600" />
-                            Phone Number *
-                        </label>
-                        <input
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                            placeholder="1234567890"
-                        />
+                        <label className="block text-sm font-medium mb-1">Phone</label>
+                        <div className="flex items-center border rounded-md px-3 py-2">
+                            <FaPhone className="text-gray-400 mr-2" />
+                            <input
+                                type="text"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                className="w-full focus:outline-none"
+                                required
+                            />
+                        </div>
                     </div>
 
                     {/* Address */}
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">
-                            <FaMapMarkerAlt className="inline mr-2 text-blue-600" />
-                            Address *
-                        </label>
-                        <input
-                            type="text"
-                            name="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                            placeholder="Enter your address"
-                        />
+                        <label className="block text-sm font-medium mb-1">Address</label>
+                        <div className="flex items-center border rounded-md px-3 py-2">
+                            <FaMapMarkerAlt className="text-gray-400 mr-2" />
+                            <input
+                                type="text"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleChange}
+                                className="w-full focus:outline-none"
+                            />
+                        </div>
                     </div>
 
                     {/* Cover Letter */}
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Cover Letter *</label>
+                        <label className="block text-sm font-medium mb-1">Cover Letter (Tell us why you're a great fit)</label>
                         <textarea
                             name="coverLetter"
+                            rows="4"
                             value={formData.coverLetter}
                             onChange={handleChange}
+                            className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
                             required
-                            rows="5"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"
-                            placeholder="Tell us why you're a great fit for this position..."
-                        />
+                        ></textarea>
                     </div>
 
                     {/* Resume Upload */}
                     <div>
-                        <label className="block text-gray-700 font-semibold mb-2">
-                            <FaFileUpload className="inline mr-2 text-blue-600" />
-                            Upload Resume (PDF) *
+                        <label className="block text-sm font-medium mb-1">Upload Resume</label>
+
+                        <label className="flex items-center gap-2 border rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50">
+                            <FaFileUpload className="text-gray-500" />
+                            <span className="text-gray-600">{resumePreview || "Choose file"}</span>
+                            <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleFileChange} />
                         </label>
-                        <div className="relative">
-                            <input type="file" accept=".pdf" onChange={handleFileChange} required className="hidden" id="resume-upload" />
-                            <label
-                                htmlFor="resume-upload"
-                                className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition"
-                            >
-                                <div className="text-center">
-                                    <FaFileUpload className="text-3xl text-gray-400 mx-auto mb-2" />
-                                    <p className="text-sm text-gray-600">{resumePreview || "Click to upload PDF resume"}</p>
-                                </div>
-                            </label>
-                        </div>
                     </div>
 
                     {/* Buttons */}
-                    <div className="flex gap-4 pt-4">
+                    <div className="flex justify-end gap-3 pt-2 w-full">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition"
+                            className="px-4 w-[50%] py-2 border rounded-md text-gray-700 hover:bg-gray-100"
                         >
                             Cancel
                         </button>
-                        <button
-                            type="submit"
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-[#2D68C4] to-[#87CEEB] text-white font-semibold rounded-lg hover:from-[#2a52be] hover:to-[#4B9CD3] transition shadow-lg"
-                        >
+
+                        <button type="submit" className="px-4 w-[50%] py-2 bg-[#1E90FF] text-white rounded-md hover:bg-[#0000FF]">
                             Submit Application
                         </button>
                     </div>

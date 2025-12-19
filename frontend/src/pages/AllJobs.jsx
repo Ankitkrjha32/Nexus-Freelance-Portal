@@ -2,18 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { getAllJobs } from "../services/operations/jobAPI";
 import ApplicationModal from "../components/common/ApplicationModal";
-import { FaBriefcase, FaMapMarkerAlt, FaMoneyBillWave, FaCalendarAlt, FaBuilding, FaSearch, FaFilter } from "react-icons/fa";
+import { FaBriefcase, FaMapMarkerAlt, FaMoneyBillWave, FaCalendarAlt, FaBuilding, FaSearch, FaFilter, FaInfoCircle } from "react-icons/fa";
+import "../App.css";
 
 const AllJobs = () => {
     const dispatch = useDispatch();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showSkeleton, setShowSkeleton] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [selectedCity, setSelectedCity] = useState("All");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
 
+    useEffect(() => {
+        if (!loading) {
+            const timer = setTimeout(() => {
+                setShowSkeleton(false);
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        } else {
+            setShowSkeleton(true);
+        }
+    }, [loading]);
     useEffect(() => {
         const fetchJobs = async () => {
             setLoading(true);
@@ -73,16 +86,16 @@ const AllJobs = () => {
         setSelectedJob(null);
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600 text-lg">Loading jobs...</p>
-                </div>
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div className="min-h-screen flex items-center justify-center mt-14 w-full">
+    //             <div className="text-center">
+    //                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
+    //                 <p className="mt-4 text-gray-600 text-lg">Loading jobs...</p>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8 mt-14 w-[90%]">
@@ -90,10 +103,10 @@ const AllJobs = () => {
                 {/* Header Section */}
                 <div className="text-center mb-12">
                     <h1 className="text-5xl font-bold text-gray-900 mb-4">
-                        Explore <span className="text-blue-600">Job Opportunities</span>
+                        Explore <span className="text-blue-600">Freelancing Oppurtunities</span>
                     </h1>
                     <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                        Discover your next career move from {jobs.length} available positions
+                        Discover your next freelancing oppurtinity from {jobs.length} available positions
                     </p>
                 </div>
 
@@ -161,7 +174,16 @@ const AllJobs = () => {
                 </div>
 
                 {/* Jobs Grid */}
-                {filteredJobs.length === 0 ? (
+                {showSkeleton ? (
+                    <div className="grid grid-cols-3 grid-rows-2 gap-6">
+                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
+                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
+                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
+                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
+                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
+                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
+                    </div>
+                ) : filteredJobs.length === 0 ? (
                     <div className="text-center py-16">
                         <FaBriefcase className="text-6xl text-gray-300 mx-auto mb-4" />
                         <h3 className="text-2xl font-semibold text-gray-700 mb-2">No jobs found</h3>
@@ -172,107 +194,68 @@ const AllJobs = () => {
                         {filteredJobs.map((job) => (
                             <div
                                 key={job._id}
-                                className="bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group"
+                                className="bg-white rounded-xl flex flex-col shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group gap-3  items-center justify-between"
                             >
-                                {/* Card Header */}
-                                <div className="bg-gradient-to-r from-[#2D68C4] to-[#87CEEB] p-6 text-white">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
-                                            <FaBriefcase className="text-2xl" />
+                                <div className="flex flex-col p-3 gap-5 items-center w-full">
+                                    {/* Status and price */}
+                                    <div className="flex justify-between w-full">
+                                        <div
+                                            className={`rounded-full text-white font-semi text-sm px-2 py-1 ${
+                                                !job.expired ? "bg-[#0fff50]" : "bg-[#f01b0f]"
+                                            }`}
+                                        >
+                                            {job.expired ? "Closed" : "Active"}
                                         </div>
-                                        <span className="bg-white/90 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                                            {job.category}
-                                        </span>
+                                        <p className="font-bold text-xl text-black">{formatSalary(job)}</p>
                                     </div>
-                                    <h3 className="text-xl font-bold mb-2 line-clamp-2">{job.title}</h3>
+                                    {/* title */}
+                                    <h1 className="text-blue-900 text-2xl font-bold text-center mt-3">{job.title}</h1>
+                                    {/* category */}
+                                    <p className="bg-cyan-600 text-white font-medium text-sm py-2 px-4 w-fit rounded-full">
+                                        {job.category}
+                                    </p>
+                                    {/* location  and posted on*/}
+                                    <div className="w-full flex gap-2 items-start">
+                                        <div className="flex flex-col w-[50%]">
+                                            <div className="flex items-center gap-3">
+                                                <FaMapMarkerAlt />
+                                                <p>{job.city}</p>
+                                            </div>
+                                            <p className="break-words">{job.location}</p>
+                                        </div>
+                                        <div className="flex flex-col w-[50%] items-center">
+                                            <div className="flex items-center gap-3">
+                                                <FaCalendarAlt />
+                                                <p className="font-semibold">Posted On</p>
+                                            </div>
+                                            <p>{formatDate(job.jobPostedOn)}</p>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                {/* Card Body */}
-                                <div className="p-6">
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">{job.description}</p>
-
-                                    <div className="space-y-3">
-                                        {/* Location */}
-                                        <div className="flex items-start gap-3">
-                                            <FaMapMarkerAlt className="text-blue-600 mt-1 flex-shrink-0" />
-                                            <div className="text-sm">
-                                                <p className="font-semibold text-gray-700">
-                                                    {job.city}, {job.country}
-                                                </p>
-                                                <p className="text-gray-500 text-xs">{job.location}</p>
-                                            </div>
-                                        </div>
-
-                                        {/* Salary */}
-                                        <div className="flex items-center gap-3">
-                                            <FaMoneyBillWave className="text-green-600 flex-shrink-0" />
-                                            <div className="text-sm">
-                                                <p className="font-semibold text-gray-700">{formatSalary(job)}</p>
-                                            </div>
-                                        </div>
-                                        {/* /// job document */}
-                                        <div className="flex items-center gap-3">
-                                            <FaMoneyBillWave className="text-pink-600 flex-shrink-0" />
-                                            <div className="text-sm">
-                                                <p className="font-semibold text-gray-700">
-                                                    <a
-                                                        href={job.jobDocument?.url ?? undefined}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-pink-600 hover:underline"
-                                                    >
-                                                        View Job Description
-                                                    </a>
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Posted Date */}
-                                        <div className="flex items-center gap-3">
-                                            <FaCalendarAlt className="text-purple-600 flex-shrink-0" />
-                                            <div className="text-sm">
-                                                <p className="text-gray-600">Posted on {formatDate(job.jobPostedOn)}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Status Badge */}
-                                    <div className="mt-4 pt-4 border-t border-gray-200">
-                                        <div className="flex items-center justify-between">
-                                            <span
-                                                className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                                                    job.expired ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
-                                                }`}
+                                {/* view description adn apply now button */}
+                                <div className="w-full flex flex-col gap-10 p-3">
+                                    {/* Description */}
+                                    <p className="max-w-full break-words">{job.description}</p>
+                                    <div className="flex w-full gap-2">
+                                        <button className="w-[50%] rounded-md text-black bg-white hover:bg-gray-300 shadow-md">
+                                            <a
+                                                href={job.jobDocument?.url ?? undefined}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full h-full"
                                             >
-                                                {job.expired ? "Closed" : "Active"}
-                                            </span>
-                                            <button
-                                                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 flex items-center gap-2 ${
-                                                    job.expired
-                                                        ? "bg-gray-400 cursor-not-allowed"
-                                                        : "bg-blue-600 hover:bg-blue-700 text-white"
-                                                }`}
-                                                onClick={() => handleApplyNow(job)}
-                                                disabled={job.expired}
-                                            >
-                                                {job.expired ? "Job Closed" : "Apply Now"}
-                                                {!job.expired && (
-                                                    <svg
-                                                        className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth={2}
-                                                            d="M9 5l7 7-7 7"
-                                                        />
-                                                    </svg>
-                                                )}
-                                            </button>
-                                        </div>
+                                                View Description
+                                            </a>
+                                        </button>
+                                        <button
+                                            className={`text-white p-3 w-[50%] rounded-md ${
+                                                job.expired ? "bg-red-500 cursor-not-allowed" : "bg-[#4169e1] hover:bg-[#3660e0] "
+                                            }`}
+                                            onClick={() => handleApplyNow(job)}
+                                            disabled={job.expired}
+                                        >
+                                            {job.expired ? "Job Closed" : "Apply Now"}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
