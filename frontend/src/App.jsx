@@ -20,6 +20,7 @@ import PostJob from "./pages/PostJob";
 import AllCategories from "./pages/AllCategories";
 import OpenRoute from "./components/core/auth/OpenRoute";
 import PrivateRoute from "./components/core/auth/PrivateRoute";
+import Message from "./pages/Message"
 <<<<<<< Updated upstream
 import useLenis from "./hooks/useLenis";
 =======
