@@ -13,7 +13,7 @@ export function signUp(signupData, navigate) {
         const toastId = toast.loading("Loading...");
         dispatch(setLoading(true));
 
-        console.log(SIGNUP_API)
+        console.log(SIGNUP_API);
         try {
             const response = await apiConnector("POST", SIGNUP_API, {
                 firstName: signupData.firstName,
@@ -84,11 +84,10 @@ export function login(email, password, role, navigate) {
 
 export function logout(navigate) {
     return (dispatch) => {
-        dispatch(setToken(null));
-        dispatch(setUser(null));
-        dispatch(resetCart());
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        dispatch(setToken(null));
+        dispatch(setUser(null));
         toast.success("Logged Out");
         navigate("/");
     };

@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import HowItWorks from "./pages/HowItWorks";
+import HowItWorks1 from "./pages/HowItWorks1";
 import AboutUs from "./pages/AboutUs";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
@@ -19,13 +20,15 @@ import PostJob from "./pages/PostJob";
 import AllCategories from "./pages/AllCategories";
 import OpenRoute from "./components/core/auth/OpenRoute";
 import PrivateRoute from "./components/core/auth/PrivateRoute";
+import useLenis from "./hooks/useLenis";
 
 function App() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.profile);
+    useLenis();
     return (
-        <div className="w-full min-h-screen flex flex-col items-center font-inter overflow-x-hidden overflow-y-auto">
+        <div className="w-full min-h-screen flex flex-col items-center font-inter overflow-x-hidden ">
             <ScrollToTop />
             <Navbar />
             <Routes>
@@ -57,7 +60,7 @@ function App() {
                     path="/how-it-works"
                     element={
                         <OpenRoute>
-                            <HowItWorks />
+                            <HowItWorks1 />
                         </OpenRoute>
                     }
                 />

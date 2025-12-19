@@ -26,16 +26,16 @@ const HowItWorks = () => {
             </div>
 
             {/* <--------------------Toggle Button----------------------> */}
-            <div className="bg-blue-100 rounded-2xl w-fit flex flex-row justify-between p-1 mt-10 text-white">
+            <div className="bg-blue-300 rounded-2xl w-fit flex flex-row justify-between p-1 mt-10 text-white">
                 <button
-                    className={`py-2 px-6  rounded-2xl ${state === "Posting" ? "bg-blue-300" : "bg-blue-100"}`}
+                    className={`py-2 px-6  rounded-2xl ${state === "Posting" ? "bg-blue-400" : "bg-blue-300"}`}
                     onClick={() => setState("Posting")}
                     type="button"
                 >
                     Posting a Job
                 </button>
                 <button
-                    className={`py-2 px-6  rounded-2xl ${state === "Applying" ? "bg-blue-300" : "bg-blue-100"}`}
+                    className={`py-2 px-6  rounded-2xl ${state === "Applying" ? "bg-blue-400" : "bg-blue-300"}`}
                     onClick={() => setState("Applying")}
                     type="button"
                 >
@@ -49,7 +49,7 @@ const HowItWorks = () => {
                     {postJobSteps.map((step, index) => (
                         <div
                             key={index}
-                            className="h-80 w-60  transition-all duration-300 hover:scale-110 rounded-lg p-3 flex flex-col items-center justify-start text-black relative ring-3 ring-gray-500"
+                            className="h-80 w-60  transition-all duration-300 hover:scale-110 rounded-lg p-3 flex flex-col items-center justify-start text-black relative border-2 border-gray-500"
                         >
                             <h3 className="font-inter font-bold text-2xl mt-4 text-center h-30 w-28">{step.title}</h3>
                             <p className="font-inter text-lg font-medium text-center">{step.description}</p>
@@ -66,7 +66,7 @@ const HowItWorks = () => {
                     {applyJobSteps.map((step, index) => (
                         <div
                             key={index}
-                            className="h-80 w-60  transition-all duration-300 hover:scale-110 rounded-lg p-3 flex flex-col items-center justify-start text-black relative ring-2 ring-pure-greys-600"
+                            className="h-80 w-60  transition-all duration-300 hover:scale-110 rounded-lg p-3 flex flex-col items-center justify-start text-black relative border-2 border-pure-greys-600"
                         >
                             <h3 className="font-inter font-bold text-2xl mt-4 text-center h-30 w-28">{step.title}</h3>
                             <p className="font-inter text-lg font-medium text-center">{step.description}</p>

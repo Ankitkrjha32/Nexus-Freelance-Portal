@@ -6,7 +6,7 @@ import MadeOnNexwork from "../components/core/home/MadeOnNexwork";
 
 const Home = () => {
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col bg-zinc-50 w-full">
             <HeroSection />
             <Categories />
             <Testimonials />
