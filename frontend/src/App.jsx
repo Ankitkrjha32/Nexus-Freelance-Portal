@@ -21,11 +21,9 @@ import AllCategories from "./pages/AllCategories";
 import OpenRoute from "./components/core/auth/OpenRoute";
 import PrivateRoute from "./components/core/auth/PrivateRoute";
 import Message from "./pages/Message"
-<<<<<<< Updated upstream
+// import Message from "./pages/Message"
 import useLenis from "./hooks/useLenis";
-=======
-import Message from "./pages/Message"
->>>>>>> Stashed changes
+// import Message from "./pages/Message"
 
 function App() {
     const dispatch = useDispatch();
