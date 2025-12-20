@@ -70,25 +70,29 @@ const MyApplications = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center mt-14 w-full">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600 text-lg">Loading applications...</p>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center mt-14 w-full">
+                <div className="text-center bg-white p-12 rounded-3xl shadow-2xl border border-gray-200">
+                    <div className="relative w-20 h-20 mx-auto mb-6">
+                        <div className="absolute inset-0 border-4 border-emerald-200 rounded-full"></div>
+                        <div className="absolute inset-0 border-4 border-emerald-600 rounded-full border-t-transparent animate-spin"></div>
+                    </div>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">Loading Applications</h3>
+                    <p className="text-slate-600">Please wait while we fetch your applications...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#f9fafc] flex flex-col items-center py-10 px-6 mt-14 w-full">
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-6 mt-14 w-full">
             {/* Header */}
-            <div className="w-[90%] mb-8">
-                <h1 className="text-4xl font-bold text-[#0b1957] mb-2">My Applications</h1>
-                <p className="text-gray-600">Track and manage your job applications</p>
+            <div className="w-full max-w-7xl mb-8">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent mb-2">My Applications</h1>
+                <p className="text-slate-600">Track and manage your job applications</p>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-4 w-[90%] gap-10 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full max-w-7xl gap-6 mb-8">
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Total Applications</p>
                     <p className="text-2xl font-bold text-blue-600">{applications.length}</p>

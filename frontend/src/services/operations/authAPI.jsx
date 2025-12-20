@@ -89,7 +89,7 @@ export function logout(navigate) {
         dispatch(setToken(null));
         dispatch(setUser(null));
         toast.success("Logged Out");
-        navigate("/");
+        navigate("/login");
     };
 }
 

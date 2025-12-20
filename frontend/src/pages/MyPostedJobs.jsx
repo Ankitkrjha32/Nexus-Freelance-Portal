@@ -154,27 +154,31 @@ const MyJobs = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center w-full mt-14">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600 text-lg">Loading your jobs...</p>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center w-full mt-14">
+                <div className="text-center bg-white p-12 rounded-3xl shadow-2xl border border-gray-200">
+                    <div className="relative w-20 h-20 mx-auto mb-6">
+                        <div className="absolute inset-0 border-4 border-emerald-200 rounded-full"></div>
+                        <div className="absolute inset-0 border-4 border-emerald-600 rounded-full border-t-transparent animate-spin"></div>
+                    </div>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">Loading Jobs</h3>
+                    <p className="text-slate-600">Please wait while we fetch your posted jobs...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#f9fafc] flex flex-col items-center py-10 px-6 mt-14 w-full">
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-6 mt-14 w-full">
             {/* Header */}
-            <div className="w-[90%] mb-8">
+            <div className="w-full max-w-7xl mb-8">
                 <div className="flex justify-between items-center">
                     <div>
-                        <h1 className="text-4xl font-bold text-[#0b1957] mb-2">My Posted Jobs</h1>
-                        <p className="text-gray-600">Manage and track your job postings</p>
+                        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent mb-2">My Posted Jobs</h1>
+                        <p className="text-slate-600">Manage and track your job postings</p>
                     </div>
                     <button
                         onClick={() => navigate("/post-job")}
-                        className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition shadow-lg"
+                        className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 transition shadow-lg text-sm md:text-base"
                     >
                         + Post New Job
                     </button>
@@ -182,7 +186,7 @@ const MyJobs = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-3 gap-4 w-[90%]  mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-7xl mb-6">
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <p className="text-gray-500 text-sm">Total Jobs Posted</p>
                     <p className="text-2xl font-bold text-blue-600">{jobs.length}</p>
@@ -198,7 +202,7 @@ const MyJobs = () => {
             </div>
 
             {/* Search + Filter */}
-            <div className="flex w-[90%] items-center gap-4 mb-6 relative">
+            <div className="flex w-full max-w-7xl items-center gap-4 mb-6 relative flex-wrap">
                 <div className="relative w-full">
                     <IoSearch className="absolute left-4 top-3.5 text-gray-400" />
                     <input
@@ -246,7 +250,7 @@ const MyJobs = () => {
             </div>
 
             {/* Job Cards */}
-            <div className="flex flex-col w-[90%] gap-5">
+            <div className="flex flex-col w-full max-w-7xl gap-5">
                 {filteredJobs.map((job) => (
                     <div
                         key={job._id}

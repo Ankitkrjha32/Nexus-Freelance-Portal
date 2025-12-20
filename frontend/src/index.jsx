@@ -14,13 +14,22 @@ const store = configureStore({
 
 createRoot(document.getElementById("root")).render(
     <>
-        <Toaster />
-        <StrictMode>
+        <Toaster
+            position="bottom-right"
+            toastOptions={{
+                duration: 3000,
+                style: {
+                    background: '#fff',
+                    color: '#363636',
+                },
+            }}
+        />
+        {/* <StrictMode> */}
             <Provider store={store}>
                 <BrowserRouter>
                     <App />
                 </BrowserRouter>
             </Provider>
-        </StrictMode>
+        {/* </StrictMode> */}
     </>
 );

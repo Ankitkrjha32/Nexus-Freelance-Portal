@@ -8,27 +8,27 @@ const HowItWorks1 = () => {
     const [state, setState] = useState("Posting");
 
     return (
-        <div className="flex flex-col w-full items-center">
-            {/* <--------------------Hero Section-----------------------> */}
-            <div className="flex w-full flex-col md:flex-row justify-evenly gap-7">
-                <div className="flex w-full h-[400px] md:h-[500px] bg-cover bg-center bg-[url('/assets/hero-bg2.jpg')] flex-col justify-center items-start px-5 md:px-10 gap-6">
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">How Nexwork Works?</h1>
+        <div className="flex flex-col w-full items-center bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 min-h-screen">
+            {/* Hero Section */}
+            <div className="flex w-full flex-col md:flex-row justify-center gap-7">
+                <div className="flex w-full h-[450px] md:h-[550px] bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 flex-col justify-center items-center px-6 md:px-16 gap-8 text-center">
+                    <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight drop-shadow-lg">How NexWork Works?</h1>
 
-                    <h2 className="text-lg md:text-2xl text-white max-w-[600px]">
+                    <p className="text-xl md:text-2xl text-white/95 max-w-[700px] leading-relaxed">
                         Whether you're here to post or apply, NexWork connects talent within your university community.
-                    </h2>
+                    </p>
 
                     <CTAButton active={true} linkto="/signup">
-                        <div className="flex flex-row items-center gap-3 w-[150px] justify-center">
-                            <span>Join Now</span>
+                        <div className="flex flex-row items-center gap-3 px-8 py-2 justify-center">
+                            <span className="text-lg font-semibold">Join Now</span>
                             <FaArrowRight />
                         </div>
                     </CTAButton>
                 </div>
             </div>
 
-            {/* <--------------------Toggle Button----------------------> */}
-            <div className="bg-blue-300 rounded-2xl flex flex-wrap items-center p-1 mt-10 text-white w-fit">
+            {/* Toggle Button */}
+            <div className="bg-white shadow-lg rounded-2xl flex flex-wrap items-center p-1.5 mt-14 w-fit border border-emerald-200">
                 {[
                     { label: "Posting a Job", value: "Posting" },
                     { label: "Applying for a Job", value: "Applying" },
@@ -37,25 +37,29 @@ const HowItWorks1 = () => {
                         key={tab.value}
                         type="button"
                         onClick={() => setState(tab.value)}
-                        className={`py-2 px-6 rounded-2xl transition ${state === tab.value ? "bg-blue-400" : "bg-blue-300"}`}
+                        className={`py-3 px-8 rounded-xl transition-all duration-300 font-semibold ${
+                            state === tab.value 
+                                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md" 
+                                : "bg-white text-slate-700 hover:bg-slate-50"
+                        }`}
                     >
                         {tab.label}
                     </button>
                 ))}
             </div>
 
-            {/* <--------------------Steps for posting and applying to a job------------> */}
-            {state === "Posting" && <StepCards steps={postJobSteps} bgColor="bg-blue-200" borderColor="border-gray-500" />}
+            {/* Steps for posting and applying to a job */}
+            {state === "Posting" && <StepCards steps={postJobSteps} bgColor="bg-emerald-400" borderColor="border-emerald-300" />}
 
-            {state === "Applying" && <StepCards steps={applyJobSteps} bgColor="bg-blue-400" borderColor="border-pure-greys-600" />}
+            {state === "Applying" && <StepCards steps={applyJobSteps} bgColor="bg-teal-400" borderColor="border-teal-300" />}
 
-            {/* <--------------------CTA Buttons------------------------> */}
-            <div className="flex flex-row gap-4 text-white mt-14 mb-10">
-                <CTAButton active={true} linkto={"/"}>
-                    Post a Job
+            {/* CTA Buttons */}
+            <div className="flex flex-col md:flex-row gap-6 text-white mt-20 mb-16 items-center">
+                <CTAButton active={true} linkto={"/post-job"}>
+                    <span className="px-6 py-2 text-lg font-semibold">Post a Job</span>
                 </CTAButton>
-                <CTAButton active={false} linkto={"/"}>
-                    Browse Jobs
+                <CTAButton active={false} linkto={"/all-jobs"}>
+                    <span className="px-6 py-2 text-lg font-semibold">Browse Jobs</span>
                 </CTAButton>
             </div>
         </div>

@@ -5,7 +5,6 @@ import logo from "../../assets/logo2.png";
 import { Link, matchPath } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import ProfileDropDown from "../core/auth/ProfileDropDown";
-import SearchBar from "./SearchBar";
 
 const Navbar = () => {
     const { token } = useSelector((state) => state.auth);
@@ -33,7 +32,7 @@ const Navbar = () => {
                             </Link>
                         ))}
                 </div>
-                {/* div 3 -> login and signup buttons if logged out / search bar and profile dropdown is logged in */}
+                {/* div 3 -> login and signup buttons if logged out / welcome message and profile dropdown is logged in */}
                 <div className="text-white flex flex-row gap-3 items-center">
                     {token === null && (
                         <Link to="/Login">
@@ -53,7 +52,14 @@ const Navbar = () => {
                             </button>
                         </Link>
                     )}
-                    {token !== null && <SearchBar />}
+                    {token !== null && user && (
+                        <div className="flex items-center gap-2 mr-2">
+                            <span className="text-slate-600 font-medium text-base">Welcome,</span>
+                            <span className="text-slate-900 font-bold text-lg">
+                                {user.firstName} {user.lastName}
+                            </span>
+                        </div>
+                    )}
                     {token !== null && <ProfileDropDown />}
                 </div>
             </div>

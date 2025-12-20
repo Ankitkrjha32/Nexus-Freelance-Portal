@@ -117,7 +117,7 @@ const PostJob = () => {
     };
 
     return (
-        <div className="min-h-screen w-[90%] py-12 px-4 sm:px-6 lg:px-8 mt-14">
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 mt-14 w-full flex justify-center">
             <div className="w-full mx-auto">
                 {/* Header */}
                 <div className="text-center mb-10">
