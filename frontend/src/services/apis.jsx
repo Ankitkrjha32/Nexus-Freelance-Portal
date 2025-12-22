@@ -16,4 +16,4 @@ export const endpoints = {
     UPDATE_JOB_API: BASE_URL + "/job/update",
 };
 
-/////
+//////
