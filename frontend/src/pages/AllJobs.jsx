@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { getAllJobs } from "../services/operations/jobAPI";
 import ApplicationModal from "../components/common/ApplicationModal";
-import { FaBriefcase, FaMapMarkerAlt, FaMoneyBillWave, FaCalendarAlt, FaBuilding, FaSearch, FaFilter, FaInfoCircle } from "react-icons/fa";
+import { FaBriefcase, FaMapMarkerAlt, FaMoneyBillWave, FaCalendarAlt, FaBuilding, FaSearch, FaFilter, FaInfoCircle, FaClock, FaCheckCircle, FaUser, FaUserTie } from "react-icons/fa";
 import "../App.css";
 
 const AllJobs = () => {
@@ -27,13 +27,17 @@ const AllJobs = () => {
             setShowSkeleton(true);
         }
     }, [loading]);
+    
     useEffect(() => {
         const fetchJobs = async () => {
             setLoading(true);
             const result = await dispatch(getAllJobs());
 
             console.log("result from dispatch getAllJobs is ", result);
-            setJobs(result);
+            
+            // Sort jobs by newest first
+            const sortedJobs = result.sort((a, b) => new Date(b.jobPostedOn) - new Date(a.jobPostedOn));
+            setJobs(sortedJobs);
 
             setLoading(false);
         };
@@ -98,31 +102,31 @@ const AllJobs = () => {
     // }
 
     return (
-        <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8 mt-14 w-[90%]">
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 mt-14 w-full">
             <div className="max-w-7xl mx-auto w-full">
                 {/* Header Section */}
                 <div className="text-center mb-12">
-                    <h1 className="text-5xl font-bold text-gray-900 mb-4">
-                        Explore <span className="text-blue-600">Freelancing Oppurtunities</span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+                        Explore <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Freelancing Opportunities</span>
                     </h1>
-                    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                        Discover your next freelancing oppurtinity from {jobs.length} available positions
+                    <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+                        Discover your next freelancing opportunity from {jobs.length} available positions
                     </p>
                 </div>
 
                 {/* Search and Filter Section */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-emerald-100 p-6 mb-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Search Bar */}
                         <div className="md:col-span-1">
                             <div className="relative">
-                                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-500" />
                                 <input
                                     type="text"
                                     placeholder="Search jobs..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                                    className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 outline-none transition-all duration-300"
                                 />
                             </div>
                         </div>
@@ -130,11 +134,11 @@ const AllJobs = () => {
                         {/* Category Filter */}
                         <div className="md:col-span-1">
                             <div className="relative">
-                                <FaFilter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                <FaFilter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-teal-500" />
                                 <select
                                     value={selectedCategory}
                                     onChange={(e) => setSelectedCategory(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none cursor-pointer"
+                                    className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 outline-none transition-all duration-300 appearance-none cursor-pointer bg-white"
                                 >
                                     {categories.map((category) => (
                                         <option key={category} value={category}>
@@ -148,11 +152,11 @@ const AllJobs = () => {
                         {/* City Filter */}
                         <div className="md:col-span-1">
                             <div className="relative">
-                                <FaMapMarkerAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                <FaMapMarkerAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-500" />
                                 <select
                                     value={selectedCity}
                                     onChange={(e) => setSelectedCity(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none cursor-pointer"
+                                    className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 outline-none transition-all duration-300 appearance-none cursor-pointer bg-white"
                                 >
                                     {cities.map((city) => (
                                         <option key={city} value={city}>
@@ -166,8 +170,8 @@ const AllJobs = () => {
 
                     {/* Results count */}
                     <div className="mt-4 text-center">
-                        <p className="text-gray-600">
-                            Showing <span className="font-semibold text-blue-600">{filteredJobs.length}</span> of{" "}
+                        <p className="text-slate-600">
+                            Showing <span className="font-semibold text-emerald-600">{filteredJobs.length}</span> of{" "}
                             <span className="font-semibold">{jobs.length}</span> jobs
                         </p>
                     </div>
@@ -175,86 +179,126 @@ const AllJobs = () => {
 
                 {/* Jobs Grid */}
                 {showSkeleton ? (
-                    <div className="grid grid-cols-3 grid-rows-2 gap-6">
-                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
-                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
-                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
-                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
-                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
-                        <div className="skeleton-box  h-[450px] rounded-xl"></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="skeleton-box h-[400px] rounded-2xl"></div>
+                        <div className="skeleton-box h-[400px] rounded-2xl"></div>
+                        <div className="skeleton-box h-[400px] rounded-2xl"></div>
+                        <div className="skeleton-box h-[400px] rounded-2xl"></div>
+                        <div className="skeleton-box h-[400px] rounded-2xl"></div>
+                        <div className="skeleton-box h-[400px] rounded-2xl"></div>
                     </div>
                 ) : filteredJobs.length === 0 ? (
-                    <div className="text-center py-16">
-                        <FaBriefcase className="text-6xl text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-2xl font-semibold text-gray-700 mb-2">No jobs found</h3>
-                        <p className="text-gray-500">Try adjusting your search or filters</p>
+                    <div className="text-center py-16 bg-white/50 rounded-2xl">
+                        <FaBriefcase className="text-6xl text-slate-300 mx-auto mb-4" />
+                        <h3 className="text-2xl font-semibold text-slate-700 mb-2">No jobs found</h3>
+                        <p className="text-slate-500">Try adjusting your search or filters</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredJobs.map((job) => (
                             <div
                                 key={job._id}
-                                className="bg-white rounded-xl flex flex-col shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group gap-3  items-center justify-between"
+                                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden border-2 border-transparent hover:border-emerald-200 flex flex-col"
                             >
-                                <div className="flex flex-col p-3 gap-5 items-center w-full">
-                                    {/* Status and price */}
-                                    <div className="flex justify-between w-full">
-                                        <div
-                                            className={`rounded-full text-white font-semi text-sm px-2 py-1 ${
-                                                !job.expired ? "bg-[#0fff50]" : "bg-[#f01b0f]"
+                                {/* Card Header */}
+                                <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-4">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <span
+                                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
+                                                !job.expired 
+                                                    ? "bg-green-100 text-green-700 border border-green-300" 
+                                                    : "bg-red-100 text-red-700 border border-red-300"
                                             }`}
                                         >
-                                            {job.expired ? "Closed" : "Active"}
+                                            {!job.expired ? (
+                                                <>
+                                                    <FaCheckCircle className="text-green-600" />
+                                                    Active
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <FaClock className="text-red-600" />
+                                                    Closed
+                                                </>
+                                            )}
+                                        </span>
+                                        <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                            <FaMoneyBillWave className="text-yellow-300" />
+                                            <p className="font-bold text-sm text-white">{formatSalary(job)}</p>
                                         </div>
-                                        <p className="font-bold text-xl text-black">{formatSalary(job)}</p>
                                     </div>
-                                    {/* title */}
-                                    <h1 className="text-blue-900 text-2xl font-bold text-center mt-3">{job.title}</h1>
-                                    {/* category */}
-                                    <p className="bg-cyan-600 text-white font-medium text-sm py-2 px-4 w-fit rounded-full">
+                                    <h2 className="text-xl font-bold text-white mb-2 line-clamp-2">{job.title}</h2>
+                                    <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-xs font-semibold py-1.5 px-4 rounded-full border border-white/30">
                                         {job.category}
-                                    </p>
-                                    {/* location  and posted on*/}
-                                    <div className="w-full flex gap-2 items-start">
-                                        <div className="flex flex-col w-[50%]">
-                                            <div className="flex items-center gap-3">
-                                                <FaMapMarkerAlt />
-                                                <p>{job.city}</p>
+                                    </span>
+                                </div>
+
+                                {/* Card Body */}
+                                <div className="p-5 flex-1 flex flex-col">
+                                    {/* Posted By and Role */}
+                                    <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-slate-200">
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2 text-emerald-600 mb-1">
+                                                <FaUser className="text-sm" />
+                                                <span className="text-xs font-semibold text-slate-700">Posted By</span>
                                             </div>
-                                            <p className="break-words">{job.location}</p>
+                                            <p className="text-sm font-medium text-slate-800 line-clamp-1">{job.postedBy?.firstName} {job.postedBy?.lastName}</p>
                                         </div>
-                                        <div className="flex flex-col w-[50%] items-center">
-                                            <div className="flex items-center gap-3">
-                                                <FaCalendarAlt />
-                                                <p className="font-semibold">Posted On</p>
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2 text-teal-600 mb-1">
+                                                <FaUserTie className="text-sm" />
+                                                <span className="text-xs font-semibold text-slate-700">Role</span>
                                             </div>
-                                            <p>{formatDate(job.jobPostedOn)}</p>
+                                            <p className="text-sm font-medium text-slate-800 capitalize">{job.postedBy?.role || 'N/A'}</p>
                                         </div>
                                     </div>
-                                </div>
-                                {/* view description adn apply now button */}
-                                <div className="w-full flex flex-col gap-10 p-3">
+
+                                    {/* Location and Date */}
+                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2 text-emerald-600 mb-1">
+                                                <FaMapMarkerAlt className="text-sm" />
+                                                <span className="text-xs font-semibold text-slate-700">Location</span>
+                                            </div>
+                                            <p className="text-sm font-medium text-slate-800">{job.city}</p>
+                                            <p className="text-xs text-slate-500 line-clamp-1">{job.location}</p>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2 text-teal-600 mb-1">
+                                                <FaCalendarAlt className="text-sm" />
+                                                <span className="text-xs font-semibold text-slate-700">Posted</span>
+                                            </div>
+                                            <p className="text-sm font-medium text-slate-800">{formatDate(job.jobPostedOn)}</p>
+                                        </div>
+                                    </div>
+
                                     {/* Description */}
-                                    <p className="max-w-full break-words">{job.description}</p>
-                                    <div className="flex w-full gap-2">
-                                        <button className="w-[50%] rounded-md text-black bg-white hover:bg-gray-300 shadow-md">
-                                            <a
-                                                href={job.jobDocument?.url ?? undefined}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-full h-full"
-                                            >
-                                                View Description
-                                            </a>
-                                        </button>
+                                    <div className="mb-4 flex-1">
+                                        <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">{job.description}</p>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex gap-3 mt-auto">
+                                        <a
+                                            href={job.jobDocument?.url ?? undefined}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 text-center py-2.5 px-4 rounded-xl border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+                                        >
+                                            <FaInfoCircle />
+                                            Details
+                                        </a>
                                         <button
-                                            className={`text-white p-3 w-[50%] rounded-md ${
-                                                job.expired ? "bg-red-500 cursor-not-allowed" : "bg-[#4169e1] hover:bg-[#3660e0] "
+                                            className={`flex-1 py-2.5 px-4 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
+                                                job.expired
+                                                    ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                                                    : "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-md hover:shadow-lg"
                                             }`}
                                             onClick={() => handleApplyNow(job)}
                                             disabled={job.expired}
                                         >
-                                            {job.expired ? "Job Closed" : "Apply Now"}
+                                            <FaBriefcase />
+                                            {job.expired ? "Closed" : "Apply"}
                                         </button>
                                     </div>
                                 </div>

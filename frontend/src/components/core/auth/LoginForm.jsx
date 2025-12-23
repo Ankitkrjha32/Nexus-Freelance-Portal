@@ -129,16 +129,18 @@ const LoginForm = () => {
     };
 
     return (
-        <form onSubmit={submitHandler} className="w-full mb-7">
+        <form onSubmit={submitHandler} className="w-full max-w-md mx-auto px-2">
             {/* Account Type Toggle */}
-            <div className="bg-[#87CEEB] rounded-2xl flex flex-wrap justify-between p-1 mb-7 gap-2">
+            <div className="bg-gradient-to-r from-emerald-100 to-teal-100 rounded-2xl flex flex-wrap justify-center gap-2 p-2 mb-6">
                 {accountOptions.map((option) => (
                     <button
                         key={option}
                         type="button"
                         onClick={() => setAccountType(option)}
-                        className={`py-2 px-6 md:px-10 rounded-2xl transition-colors ${
-                            accountType === option ? "bg-[#00BFFF]" : "bg-[#87CEEB]"
+                        className={`py-2 px-4 sm:px-6 md:px-8 rounded-xl transition-all duration-300 font-semibold text-sm sm:text-base ${
+                            accountType === option 
+                                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg scale-105" 
+                                : "bg-white text-slate-700 hover:bg-slate-50"
                         }`}
                     >
                         {option}
@@ -147,8 +149,8 @@ const LoginForm = () => {
             </div>
 
             {/* Email Field */}
-            <label className="flex flex-col gap-2 mb-4 w-full">
-                <span className="flex items-center gap-1 text-black font-medium">
+            <label className="flex flex-col gap-2 mb-5 w-full">
+                <span className="flex items-center gap-1 text-slate-800 font-semibold text-sm sm:text-base">
                     Email Address <span className="text-red-500">*</span>
                 </span>
                 <input
@@ -157,14 +159,14 @@ const LoginForm = () => {
                     name="email"
                     value={formData.email}
                     onChange={changeHandler}
-                    placeholder="Enter Email ID"
-                    className="p-3 rounded-lg border-2 border-richblack-900 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="Enter your email"
+                    className="p-3 rounded-xl border-2 border-slate-300 focus:border-emerald-500 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-emerald-200 transition-all duration-300 text-sm sm:text-base"
                 />
             </label>
 
             {/* Password Field */}
-            <label className="flex flex-col gap-2 mb-4 w-full">
-                <span className="flex items-center gap-1 text-black font-medium">
+            <label className="flex flex-col gap-2 mb-6 w-full">
+                <span className="flex items-center gap-1 text-slate-800 font-semibold text-sm sm:text-base">
                     Password <span className="text-red-500">*</span>
                 </span>
                 <div className="relative w-full">
@@ -174,20 +176,23 @@ const LoginForm = () => {
                         name="password"
                         value={formData.password}
                         onChange={changeHandler}
-                        placeholder="Enter Password"
-                        className="p-3 rounded-lg border-2 border-richblack-900 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        placeholder="Enter your password"
+                        className="p-3 pr-12 rounded-xl border-2 border-slate-300 focus:border-emerald-500 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-emerald-200 transition-all duration-300 text-sm sm:text-base"
                     />
                     <span
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-black"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-slate-600 hover:text-emerald-600 transition-colors"
                     >
-                        {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                        {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
                     </span>
                 </div>
             </label>
 
             {/* Submit Button */}
-            <button type="submit" className="w-full bg-[#1E90FF] rounded-lg p-3 text-black font-medium transition-colors hover:bg-blue-600">
+            <button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-xl p-3 sm:p-4 text-white font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02]"
+            >
                 Sign In
             </button>
         </form>

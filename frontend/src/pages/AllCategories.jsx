@@ -7,7 +7,7 @@ const AllCategories = () => {
         <div className="flex flex-col w-full items-center mt-16">
             <h1 className="font-bold text-3xl font-sans text-indigo-800">Browse By Category</h1>
             <p className="text-gray-700 mt-5">Explore opportunities across various fields and find projects that match your skills.</p>
-            <div className="grid grid-cols-2 gap-3 w-[90%] mt-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl mt-10 px-4">
                 {AllCategoriesIcons.map((category, index) => (
                     <Link
                         className="rounded-lg flex flex-row items-center gap-5 p-4 transition-all duration-300 group hover:scale-103 hover:shadow-xl hover:shadow-blue-400"

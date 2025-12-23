@@ -11,13 +11,13 @@ const HowItWorks = () => {
             {/* <--------------------Hero Section-----------------------> */}
             <div className="w-full flex flex-row gap-7 justify-evenly">
                 <div className="w-full bg-cover bg-center flex flex-col justify-center items-start px-5 bg-[url('/assets/hero-bg2.jpg')] h-100 gap-10">
-                    <h1 className="text-5xl font-extrabold text-white">How Nexwork Works ?</h1>
+                    <h1 className="text-5xl font-extrabold text-white">How Nexwork Workslll ?</h1>
                     <h2 className="text-2xl text-white w-200">
                         Whether you're here to post or apply, NexWork connects talent within your university community.
                     </h2>
                     <CTAButton active={true} linkto={"/signup"}>
                         <div className="gap-4 flex flex-row items-center w-[150px] justify-center">
-                            <span>Join Now</span>
+                            <span>Join Nowllllllll</span>
                             <FaArrowRight />
                         </div>
                     </CTAButton>

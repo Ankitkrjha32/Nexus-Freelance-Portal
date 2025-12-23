@@ -6,7 +6,7 @@ import { NotifyAll } from "../nodemailer/Email.js";
 import { fetchAllUsers } from "./adminController.js";
 
 export const getAllJobs = catchAsyncErrors(async (req, res, next) => {
-  const jobs = await Job.find({});
+  const jobs = await Job.find({}).populate('postedBy', 'firstName lastName email role');
   res.status(200).json({
     success: true,
     jobs,
@@ -300,7 +300,7 @@ export const deleteJob = catchAsyncErrors(async (req, res, next) => {
 export const getSingleJob = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   try {
-    const job = await Job.findById(id);
+    const job = await Job.findById(id).populate('postedBy', 'firstName lastName email role');
     if (!job) {
       return next(new ErrorHandler("Job not found.", 404));
     }

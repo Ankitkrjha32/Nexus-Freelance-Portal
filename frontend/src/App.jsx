@@ -31,7 +31,7 @@ function App() {
     const { user } = useSelector((state) => state.profile);
     useLenis();
     return (
-        <div className="w-full min-h-screen flex flex-col items-center font-inter overflow-x-hidden ">
+        <div className="w-full min-h-screen flex flex-col items-center font-inter overflow-x-hidden">
             <ScrollToTop />
             <Navbar />
             <Routes>

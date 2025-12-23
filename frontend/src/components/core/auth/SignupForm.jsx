@@ -245,32 +245,35 @@ const SignUpForm = () => {
                     </div>
                 </label>
 
-                <label className="flex flex-col gap-3 mb-3 w-[50%]">
-                    <div className="flex flex-row gap-1">
-                        <p>Confirm Password</p>
-                        <div className="text-red-500">*</div>
-                    </div>
-                    <div className="relative flex flex-row items-center">
+                <label className="flex flex-col gap-2 mb-4 w-full sm:w-1/2">
+                    <span className="flex items-center gap-1 text-slate-800 font-semibold text-sm sm:text-base">
+                        Confirm Password <span className="text-red-500">*</span>
+                    </span>
+                    <div className="relative w-full">
                         <input
                             required
                             type={showConfirmPassword ? "text" : "password"}
                             name="confirmPassword"
                             value={formData.confirmPassword}
-                            id="confirmPassword"
                             placeholder="Confirm Password"
                             onChange={changeHandler}
-                            className="border-2 border-richblack-900 p-3 rounded-[7px] shadow-[0_1px_0_0_#ffffff] w-full"
+                            className="border-2 border-slate-300 focus:border-emerald-500 p-3 pr-12 rounded-xl shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-emerald-200 transition-all duration-300 text-sm sm:text-base"
                         />
                         <span
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute transform translate-y-1/2 top-[10px] left-[220px]"
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-slate-600 hover:text-emerald-600 transition-colors"
                         >
-                            {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                            {showConfirmPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
                         </span>
                     </div>
                 </label>
             </div>
-            <button type="submit" className="w-full bg-[#1E90FF] rounded-[7px] p-3 text-black mt-5">
+            
+            {/* Submit Button */}
+            <button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-xl p-3 sm:p-4 text-white font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] mt-2"
+            >
                 Create Account
             </button>
 
