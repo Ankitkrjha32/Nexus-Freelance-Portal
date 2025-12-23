@@ -1,5 +1,5 @@
 import React from "react";
-import Template from "../components/core/Auth/Template";
+import Template from "../components/core/auth/Template.jsx";
 import image from "../assets/login.webp";
 
 const Login = () => {
